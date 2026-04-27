@@ -2449,10 +2449,15 @@ async function uploadToCloudinary(file, onProgress) {
       if (xhr.status === 200) {
         resolve(JSON.parse(xhr.responseText).secure_url);
       } else {
-        reject(new Error('HTTP ' + xhr.status));
+        let msg = 'Cloudinary HTTP ' + xhr.status;
+        try {
+          const err = JSON.parse(xhr.responseText);
+          if (err.error?.message) msg = 'Cloudinary: ' + err.error.message;
+        } catch(_) {}
+        reject(new Error(msg));
       }
     };
-    xhr.onerror = () => reject(new Error('Network error'));
+    xhr.onerror = () => reject(new Error('Cloudinary: không kết nối được'));
     xhr.open('POST', `https://api.cloudinary.com/v1_1/${CONFIG.CLOUDINARY.cloudName}/auto/upload`);
     xhr.send(fd);
   });

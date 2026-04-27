@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Only Firebase-authenticated users can access data.
+    // Email whitelist is enforced on the JS side; here we verify the write
+    // fields match the actual auth token (prevents spoofing).
+
+    match /memories/{memoryId} {
+      allow read: if request.auth != null;
+
+      allow create: if request.auth != null
+                    && request.resource.data.uploadedBy.email == request.auth.token.email;
+
+      allow update, delete: if request.auth != null
+                             && resource.data.uploadedBy.email == request.auth.token.email;
+    }
+
+    match /comments/{memoryId}/items/{commentId} {
+      allow read: if request.auth != null;
+
+      allow create: if request.auth != null
+                    && request.resource.data.author.email == request.auth.token.email;
+
+      allow update, delete: if request.auth != null
+                             && resource.data.author.email == request.auth.token.email;
+    }
+  }
+}
