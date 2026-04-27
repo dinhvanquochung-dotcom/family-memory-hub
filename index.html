@@ -1,531 +1,2112 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📸 Family Memory Hub</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Family Memory Hub · Dòng họ Đinh</title>
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+  <!-- Fonts: Playfair Display (Royal) + Be Vietnam Pro (Vietnamese body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-        }
+  <style>
+    /* ═══════════════════════════════════════
+       DESIGN TOKENS — Royal Blue × Gold
+    ═══════════════════════════════════════ */
+    :root {
+      --royal:        #1a3a7c;
+      --royal-mid:    #2451a8;
+      --royal-bright: #3366cc;
+      --royal-pale:   #e8eef8;
+      --royal-ghost:  #f2f5fb;
+      --gold:         #b8862e;
+      --gold-bright:  #d4a843;
+      --gold-pale:    #fdf5e6;
+      --gold-line:    rgba(184,134,46,0.3);
+      --ink:          #0f1c3a;
+      --ink-mid:      #3d4f70;
+      --ink-soft:     #7a89a8;
+      --cream:        #fafbfd;
+      --white:        #ffffff;
+      --border:       rgba(26,58,124,0.10);
+      --border-gold:  rgba(184,134,46,0.25);
+      --shadow-sm:    0 2px 8px rgba(15,28,58,0.06);
+      --shadow-md:    0 4px 20px rgba(15,28,58,0.10);
+      --shadow-lg:    0 8px 40px rgba(15,28,58,0.14);
 
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'Be Vietnam Pro', -apple-system, sans-serif;
+      --radius-sm:    6px;
+      --radius-md:    10px;
+      --radius-lg:    16px;
+      --radius-xl:    24px;
 
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.95;
-        }
+      --nav-h: 64px;
+      --bottom-nav-h: 64px;
+    }
 
-        .login-section {
-            padding: 60px 20px;
-            text-align: center;
-        }
+    /* ═══════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .login-section h2 {
-            margin-bottom: 30px;
-            color: #333;
-        }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 
-        #g_id_onload {
-            display: flex;
-            justify-content: center;
-        }
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-        .main-content {
-            display: none;
-            padding: 40px 20px;
-        }
+    img { max-width: 100%; display: block; }
+    button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }
+    input, textarea, select { font-family: var(--font-body); }
+    a { color: inherit; text-decoration: none; }
 
-        .main-content.active {
-            display: block;
-        }
+    /* ═══════════════════════════════════════
+       SCROLLBAR
+    ═══════════════════════════════════════ */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--royal-pale); border-radius: 4px; }
 
-        .user-info {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    /* ═══════════════════════════════════════
+       SCREENS SYSTEM
+    ═══════════════════════════════════════ */
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: flex; flex-direction: column; }
 
-        .user-info-left {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
+    /* ═══════════════════════════════════════
+       LOGIN SCREEN
+    ═══════════════════════════════════════ */
+    #screen-login {
+      background: var(--royal);
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      position: relative;
+      overflow: hidden;
+    }
 
-        .user-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
+    /* Decorative background pattern */
+    #screen-login::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(184,134,46,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(51,102,204,0.15) 0%, transparent 50%);
+      pointer-events: none;
+    }
 
-        .user-details h3 {
-            margin-bottom: 5px;
-            color: #333;
-        }
+    /* Ornamental lines top/bottom */
+    #screen-login::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
+    }
 
-        .user-details p {
-            color: #666;
-            font-size: 0.9em;
-        }
+    .login-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(184,134,46,0.2);
+      border-radius: var(--radius-xl);
+      padding: 48px 40px 44px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+    }
 
-        .logout-btn {
-            padding: 10px 20px;
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background 0.3s;
-        }
+    .login-crest {
+      width: 72px; height: 72px;
+      border: 2px solid var(--gold-bright);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      position: relative;
+    }
 
-        .logout-btn:hover {
-            background: #ff5252;
-        }
+    .login-crest::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(184,134,46,0.3);
+      border-radius: 50%;
+    }
 
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #eee;
-        }
+    .login-crest-letter {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gold-bright);
+      line-height: 1;
+    }
 
-        .tab-btn {
-            padding: 12px 20px;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-size: 1em;
-            color: #666;
-            transition: all 0.3s;
-        }
+    .login-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
 
-        .tab-btn.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
+    .login-subtitle-vi {
+      font-size: 14px;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 4px;
+      font-weight: 300;
+    }
 
-        .tab-content {
-            display: none;
-        }
+    .login-subtitle-en {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 13px;
+      color: var(--gold-bright);
+      opacity: 0.8;
+      margin-bottom: 36px;
+      letter-spacing: 0.02em;
+    }
 
-        .tab-content.active {
-            display: block;
-        }
+    .login-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 28px;
+    }
+    .login-divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(184,134,46,0.3), transparent);
+    }
+    .login-divider-ornament {
+      color: var(--gold-bright);
+      font-size: 12px;
+      opacity: 0.6;
+    }
 
-        .upload-section {
-            border: 2px dashed #667eea;
-            border-radius: 10px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+    /* Google Sign-In button override */
+    .g_id_signin div[role="button"] { border-radius: var(--radius-md) !important; }
 
-        .upload-section:hover {
-            background: #f8f9ff;
-            border-color: #764ba2;
-        }
+    .login-footer {
+      margin-top: 28px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      line-height: 1.6;
+    }
 
-        .upload-section input {
-            display: none;
-        }
+    /* ═══════════════════════════════════════
+       APP SHELL (after login)
+    ═══════════════════════════════════════ */
+    #screen-app {
+      background: var(--cream);
+    }
 
-        .upload-section p {
-            color: #666;
-            margin-bottom: 10px;
-        }
+    /* Top Navigation */
+    .top-nav {
+      background: var(--royal);
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(184,134,46,0.15);
+    }
 
-        .upload-btn {
-            padding: 10px 20px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background 0.3s;
-        }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+    }
 
-        .upload-btn:hover {
-            background: #764ba2;
-        }
+    .nav-crest {
+      width: 32px; height: 32px;
+      border: 1.5px solid rgba(184,134,46,0.5);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
 
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
+    .nav-crest-letter {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold-bright);
+    }
 
-        .gallery-item {
-            position: relative;
-            border-radius: 10px;
-            overflow: hidden;
-            background: #f0f0f0;
-            aspect-ratio: 1;
-        }
+    .nav-title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+    }
 
-        .gallery-item img,
-        .gallery-item video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+    .nav-tagline {
+      font-size: 9px;
+      color: rgba(255,255,255,0.45);
+      font-style: italic;
+      font-family: var(--font-display);
+    }
 
-        .gallery-empty {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
+    .nav-right {
+      display: flex; align-items: center; gap: 12px;
+    }
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+    .nav-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      border: 2px solid rgba(184,134,46,0.4);
+      object-fit: cover;
+      cursor: pointer;
+    }
 
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
+    .nav-avatar-placeholder {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--royal-mid);
+      border: 2px solid rgba(184,134,46,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gold-bright);
+      cursor: pointer;
+    }
 
-        .stat-card h3 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
+    /* User dropdown */
+    .user-menu {
+      position: relative;
+    }
 
-        .stat-card p {
-            opacity: 0.9;
-        }
+    .user-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      min-width: 200px;
+      overflow: hidden;
+      z-index: 200;
+    }
 
-        .search-section {
-            margin-bottom: 20px;
-        }
+    .user-dropdown.open { display: block; }
 
-        .search-section input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1em;
-        }
+    .user-dropdown-info {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--royal-ghost);
+    }
 
-        .albums-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-        }
+    .user-dropdown-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
 
-        .album-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+    .user-dropdown-email {
+      font-size: 11px;
+      color: var(--ink-soft);
+    }
 
-        .album-card:hover {
-            background: #e9ecef;
-            transform: translateY(-5px);
-        }
+    .user-dropdown-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px;
+      font-size: 13px;
+      color: var(--ink-mid);
+      cursor: pointer;
+      transition: background 0.15s;
+      width: 100%;
+      text-align: left;
+    }
 
-        .album-card h4 {
-            margin-bottom: 5px;
-            color: #333;
-        }
+    .user-dropdown-item:hover { background: var(--royal-ghost); }
+    .user-dropdown-item.danger { color: #c0392b; }
 
-        .album-card p {
-            color: #999;
-            font-size: 0.9em;
-        }
+    /* Main content area */
+    .main-content {
+      flex: 1;
+      padding-bottom: var(--bottom-nav-h);
+      overflow-y: auto;
+    }
 
-        .message {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            display: none;
-        }
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--bottom-nav-h);
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      display: flex;
+      z-index: 100;
+    }
 
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            display: block;
-        }
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: color 0.2s;
+      color: var(--ink-soft);
+      font-size: 10px;
+      font-weight: 500;
+      border: none;
+      background: none;
+    }
 
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            display: block;
-        }
+    .bottom-nav-item.active {
+      color: var(--royal);
+    }
 
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8em;
-            }
+    .bottom-nav-item.active .nav-icon-bg {
+      background: var(--royal-pale);
+    }
 
-            .user-info {
-                flex-direction: column;
-                gap: 15px;
-            }
+    .nav-icon-bg {
+      width: 36px; height: 28px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
 
-            .gallery {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
-        }
-    </style>
+    .nav-icon {
+      width: 20px; height: 20px;
+    }
+
+    /* ═══════════════════════════════════════
+       TAB PANELS
+    ═══════════════════════════════════════ */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ═══════════════════════════════════════
+       TIMELINE TAB
+    ═══════════════════════════════════════ */
+    .timeline-hero {
+      background: var(--royal);
+      padding: 24px 20px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .timeline-hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
+    }
+
+    .timeline-hero-greeting {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      font-weight: 300;
+      margin-bottom: 4px;
+    }
+
+    .timeline-hero-name {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+
+    .timeline-hero-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      font-style: italic;
+      font-family: var(--font-display);
+    }
+
+    .timeline-stats {
+      display: flex;
+      gap: 0;
+      margin-top: 20px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(184,134,46,0.15);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .timeline-stat {
+      flex: 1;
+      padding: 12px 8px;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .timeline-stat:last-child { border-right: none; }
+
+    .timeline-stat-num {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold-bright);
+      line-height: 1;
+      margin-bottom: 3px;
+    }
+
+    .timeline-stat-label {
+      font-size: 9px;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Month divider */
+    .month-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 20px 12px;
+    }
+
+    .month-divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border-gold);
+    }
+
+    .month-divider-label {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Memory Card */
+    .memory-card {
+      margin: 0 16px 14px;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .memory-card:active {
+      transform: scale(0.99);
+    }
+
+    .memory-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px 10px;
+    }
+
+    .memory-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--white);
+      flex-shrink: 0;
+    }
+
+    .memory-header-info { flex: 1; min-width: 0; }
+
+    .memory-family-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .memory-date {
+      font-size: 11px;
+      color: var(--ink-soft);
+      margin-top: 1px;
+    }
+
+    .memory-event-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .memory-media {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      background: var(--royal-pale);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .memory-media img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    .memory-media-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink-soft);
+    }
+
+    .memory-media-count {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(15,28,58,0.7);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+
+    .memory-body {
+      padding: 12px 14px 14px;
+    }
+
+    .memory-caption {
+      font-size: 14px;
+      color: var(--ink);
+      line-height: 1.55;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .memory-caption .family-tag {
+      font-weight: 600;
+      color: var(--royal-mid);
+    }
+
+    .memory-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .memory-action {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      cursor: pointer;
+      padding: 4px 0;
+      transition: color 0.15s;
+    }
+
+    .memory-action:hover { color: var(--royal); }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 32px;
+    }
+
+    .empty-state-icon {
+      width: 64px; height: 64px;
+      background: var(--royal-pale);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .empty-state-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .empty-state-sub {
+      font-size: 14px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    /* ═══════════════════════════════════════
+       FAMILY TAB
+    ═══════════════════════════════════════ */
+    .family-section-header {
+      padding: 20px 20px 12px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .section-count {
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    .family-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 0 16px 20px;
+    }
+
+    .family-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 16px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .family-card:active {
+      transform: scale(0.98);
+      background: var(--royal-ghost);
+    }
+
+    .family-card-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+
+    .family-card-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 3px;
+      line-height: 1.3;
+    }
+
+    .family-card-count {
+      font-size: 11px;
+      color: var(--ink-soft);
+    }
+
+    .family-card-preview {
+      display: flex;
+      gap: 3px;
+      margin-top: 10px;
+    }
+
+    .family-preview-thumb {
+      flex: 1;
+      aspect-ratio: 1;
+      border-radius: 4px;
+      background: var(--royal-pale);
+      overflow: hidden;
+    }
+
+    .family-preview-thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    /* ═══════════════════════════════════════
+       FAMILY TREE TAB
+    ═══════════════════════════════════════ */
+    .tree-header {
+      background: var(--royal);
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .tree-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
+    }
+
+    .tree-header-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .tree-header-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      font-style: italic;
+      font-family: var(--font-display);
+    }
+
+    .tree-container {
+      padding: 24px 16px;
+      overflow-x: auto;
+    }
+
+    .tree-root-node {
+      background: var(--royal);
+      color: var(--white);
+      border: 2px solid rgba(184,134,46,0.4);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      text-align: center;
+      margin: 0 auto 8px;
+      width: fit-content;
+      min-width: 140px;
+    }
+
+    .tree-root-label {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .tree-root-sub {
+      font-size: 10px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 2px;
+    }
+
+    .tree-connector-down {
+      width: 1px;
+      height: 20px;
+      background: var(--border-gold);
+      margin: 0 auto;
+    }
+
+    .tree-connector-h {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 0;
+    }
+
+    .tree-connector-h::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 15%;
+      right: 15%;
+      height: 1px;
+      background: var(--border-gold);
+    }
+
+    .tree-branches-row {
+      display: flex;
+      gap: 8px;
+      padding: 0 4px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .tree-branch-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 90px;
+    }
+
+    .tree-branch-line {
+      width: 1px;
+      height: 16px;
+      background: var(--border-gold);
+    }
+
+    .tree-branch-node {
+      background: var(--white);
+      border: 1px solid var(--border-gold);
+      border-radius: var(--radius-md);
+      padding: 10px 8px;
+      text-align: center;
+      width: 90px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tree-branch-node:active {
+      background: var(--gold-pale);
+    }
+
+    .tree-branch-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      margin: 0 auto 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .tree-branch-name {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+
+    .tree-branch-count {
+      font-size: 9px;
+      color: var(--ink-soft);
+      margin-top: 2px;
+    }
+
+    /* ═══════════════════════════════════════
+       UPLOAD TAB
+    ═══════════════════════════════════════ */
+    .upload-header {
+      background: var(--royal);
+      padding: 20px;
+    }
+
+    .upload-header-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .upload-header-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      margin-top: 3px;
+    }
+
+    .upload-form {
+      padding: 20px 16px;
+    }
+
+    .upload-zone {
+      border: 2px dashed rgba(26,58,124,0.25);
+      border-radius: var(--radius-lg);
+      padding: 36px 20px;
+      text-align: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--white);
+      position: relative;
+    }
+
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: var(--royal-mid);
+      background: var(--royal-ghost);
+    }
+
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-zone-icon {
+      width: 52px; height: 52px;
+      background: var(--royal-pale);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px;
+    }
+
+    .upload-zone-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .upload-zone-sub {
+      font-size: 12px;
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+
+    .upload-previews {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .upload-preview-item {
+      aspect-ratio: 1;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--royal-pale);
+      position: relative;
+    }
+
+    .upload-preview-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    .upload-preview-remove {
+      position: absolute;
+      top: 4px; right: 4px;
+      width: 20px; height: 20px;
+      background: rgba(15,28,58,0.7);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: white;
+      font-size: 10px;
+    }
+
+    .form-field {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-mid);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--white);
+      transition: border-color 0.15s;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--royal-mid);
+      box-shadow: 0 0 0 3px rgba(36,81,168,0.08);
+    }
+
+    select.form-input {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%237a89a8' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    /* Event tags */
+    .event-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .event-tag {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--ink-mid);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .event-tag.selected {
+      background: var(--royal);
+      color: var(--white);
+      border-color: var(--royal);
+    }
+
+    /* Video embed section */
+    .video-embed-section {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .video-embed-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .video-embed-sub {
+      font-size: 11px;
+      color: var(--ink-soft);
+      margin-bottom: 12px;
+    }
+
+    /* Submit button */
+    .btn-primary {
+      width: 100%;
+      padding: 15px;
+      background: var(--royal);
+      color: var(--white);
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.99);
+      background: var(--royal-mid);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* ═══════════════════════════════════════
+       LOADING & TOAST
+    ═══════════════════════════════════════ */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10,18,40,0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .loading-overlay.show { display: flex; }
+
+    .loading-spinner {
+      width: 40px; height: 40px;
+      border: 3px solid rgba(184,134,46,0.2);
+      border-top-color: var(--gold-bright);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: calc(var(--bottom-nav-h) + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink);
+      color: var(--white);
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 500;
+      white-space: nowrap;
+      max-width: calc(100% - 32px);
+      text-align: center;
+    }
+
+    .toast.success { background: #1a6b3a; }
+    .toast.error { background: #8b1a1a; }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ═══════════════════════════════════════
+       SETUP NOTICE (before Firebase config)
+    ═══════════════════════════════════════ */
+    .setup-notice {
+      background: #fff8e1;
+      border: 1px solid #f0c060;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin: 16px;
+      font-size: 12px;
+      color: #7a5800;
+      line-height: 1.6;
+    }
+
+    .setup-notice strong { color: #5a4000; display: block; margin-bottom: 4px; font-size: 13px; }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (min-width: 480px) {
+      .family-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (min-width: 768px) {
+      .login-card { padding: 56px 52px 48px; }
+      .memory-card { margin: 0 24px 16px; }
+      .family-grid { grid-template-columns: repeat(4, 1fr); padding: 0 24px 24px; }
+      .upload-form { max-width: 520px; margin: 0 auto; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📸 Family Memory Hub</h1>
-            <p>Lưu giữ khoảnh khắc Gia đình, chia sẻ dòng thời gian</p>
-        </div>
 
-        <!-- Login Section -->
-        <div class="login-section" id="loginSection">
-            <h2>Đăng nhập để bắt đầu</h2>
-            <div id="g_id_onload"
-                 data-client_id="488152283026-qhe0iunbkjt17v3ktcalh5v71b5t6mgi.apps.googleusercontent.com"
-                 data-callback="handleCredentialResponse">
-            </div>
-            <div class="g_id_signin" data-type="standard"></div>
-        </div>
+<!-- ═══════════════════════════════════════
+     LOADING OVERLAY
+═══════════════════════════════════════ -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loadingText">Đang tải...</div>
+</div>
 
-        <!-- Main Content -->
-        <div class="main-content" id="mainContent">
-            <!-- User Info -->
-            <div class="user-info">
-                <div class="user-info-left">
-                    <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
-                    <div class="user-details">
-                        <h3 id="userName"></h3>
-                        <p id="userEmail"></p>
-                    </div>
-                </div>
-                <button class="logout-btn" onclick="logout()">Đăng xuất</button>
-            </div>
+<!-- ═══════════════════════════════════════
+     TOAST
+═══════════════════════════════════════ -->
+<div class="toast" id="toast"></div>
 
-            <!-- Tabs -->
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('gallery')">📷 Thư viện</button>
-                <button class="tab-btn" onclick="switchTab('upload')">📤 Tải lên</button>
-                <button class="tab-btn" onclick="switchTab('albums')">📁 Album</button>
-                <button class="tab-btn" onclick="switchTab('stats')">📊 Thống kê</button>
-            </div>
-
-            <!-- Gallery Tab -->
-            <div class="tab-content active" id="galleryTab">
-                <div class="search-section">
-                    <input type="text" id="searchInput" placeholder="Tìm ảnh theo tên hoặc ngày..." onkeyup="filterGallery()">
-                </div>
-                <div class="gallery" id="gallery">
-                    <div class="gallery-empty">Chưa có ảnh nào. Hãy tải lên ảnh đầu tiên!</div>
-                </div>
-            </div>
-
-            <!-- Upload Tab -->
-            <div class="tab-content" id="uploadTab">
-                <div id="message"></div>
-                <div class="upload-section" onclick="document.getElementById('fileInput').click()">
-                    <p>📁 Kéo ảnh/video vào đây hoặc click để chọn</p>
-                    <button class="upload-btn">Chọn tệp</button>
-                    <input type="file" id="fileInput" multiple accept="image/*,video/*" onchange="handleFileSelect(event)">
-                </div>
-            </div>
-
-            <!-- Albums Tab -->
-            <div class="tab-content" id="albumsTab">
-                <div class="albums-grid" id="albumsGrid">
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;">
-                        Chưa có album nào
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stats Tab -->
-            <div class="tab-content" id="statsTab">
-                <div class="stats">
-                    <div class="stat-card">
-                        <h3 id="photoCount">0</h3>
-                        <p>Ảnh</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 id="videoCount">0</h3>
-                        <p>Video</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 id="albumCount">0</h3>
-                        <p>Album</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- ═══════════════════════════════════════
+     SCREEN: LOGIN
+═══════════════════════════════════════ -->
+<div class="screen active" id="screen-login">
+  <div class="login-card">
+    <div class="login-crest">
+      <span class="login-crest-letter">Đ</span>
     </div>
 
-    <script>
-        let userProfile = null;
-        let accessToken = null;
+    <h1 class="login-title">Family Memory Hub</h1>
+    <p class="login-subtitle-vi">Dòng họ Đinh · Lưu giữ ký ức muôn đời</p>
+    <p class="login-subtitle-en">Where family memories live forever</p>
 
-        function handleCredentialResponse(response) {
-            console.log('Login successful');
-            const token = response.credential;
-            accessToken = token;
-            
-            // Decode JWT (basic decode, not secure for production)
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            
-            userProfile = {
-                name: payload.name,
-                email: payload.email,
-                picture: payload.picture
-            };
+    <div class="login-divider">
+      <div class="login-divider-line"></div>
+      <div class="login-divider-ornament">✦</div>
+      <div class="login-divider-line"></div>
+    </div>
 
-            // Update UI
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('mainContent').classList.add('active');
-            document.getElementById('userName').textContent = userProfile.name;
-            document.getElementById('userEmail').textContent = userProfile.email;
-            document.getElementById('userAvatar').src = userProfile.picture;
+    <!-- Google Sign-In -->
+    <div id="g_id_onload"
+      data-client_id="959703403312-1d5ogrbaljscd4mhaili270tmfh0ftgs.apps.googleusercontent.com"
+      data-callback="handleCredentialResponse"
+      data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+      data-type="standard"
+      data-shape="rectangular"
+      data-theme="outline"
+      data-text="signin_with"
+      data-size="large"
+      data-locale="vi"
+      data-width="300">
+    </div>
 
-            loadGallery();
-            updateStats();
-        }
+    <div id="setup-notice-login" class="setup-notice" style="margin: 16px 0 0; text-align:left;">
+      <strong>⚙️ Cần cấu hình trước khi dùng</strong>
+      Thay <code>YOUR_GOOGLE_CLIENT_ID</code>, <code>YOUR_FIREBASE_CONFIG</code>, và <code>YOUR_CLOUDINARY_*</code> bằng thông tin thật. Xem hướng dẫn trong file README.
+    </div>
 
-        function logout() {
-            userProfile = null;
-            accessToken = null;
-            document.getElementById('loginSection').style.display = 'block';
-            document.getElementById('mainContent').classList.remove('active');
-            document.getElementById('gallery').innerHTML = '<div class="gallery-empty">Chưa có ảnh nào. Hãy tải lên ảnh đầu tiên!</div>';
-            
-            google.accounts.id.disableAutoSelect();
-        }
+    <p class="login-footer">
+      Chỉ thành viên dòng họ Đinh được phép truy cập.<br>
+      Mọi dữ liệu được bảo mật và lưu trữ riêng tư.
+    </p>
+  </div>
+</div>
 
-        function switchTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+<!-- ═══════════════════════════════════════
+     SCREEN: APP
+═══════════════════════════════════════ -->
+<div class="screen" id="screen-app">
 
-            // Show selected tab
-            document.getElementById(tabName + 'Tab').classList.add('active');
-            event.target.classList.add('active');
-        }
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <div class="nav-brand">
+      <div class="nav-crest">
+        <span class="nav-crest-letter">Đ</span>
+      </div>
+      <div>
+        <div class="nav-title">Family Memory Hub</div>
+        <div class="nav-tagline">Dòng họ Đinh</div>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="user-menu">
+        <div id="navAvatarWrap" onclick="toggleUserMenu()"></div>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-info">
+            <div class="user-dropdown-name" id="ddName"></div>
+            <div class="user-dropdown-email" id="ddEmail"></div>
+          </div>
+          <button class="user-dropdown-item" onclick="logout()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2H2a1 1 0 00-1 1v8a1 1 0 001 1h3M9 10l3-3-3-3M12 7H5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Đăng xuất
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
 
-        function handleFileSelect(event) {
-            const files = event.target.files;
-            const messageDiv = document.getElementById('message');
+  <!-- Main Content -->
+  <div class="main-content">
 
-            if (files.length === 0) return;
+    <!-- TAB: TIMELINE -->
+    <div class="tab-panel active" id="tab-timeline">
+      <div class="timeline-hero">
+        <div class="timeline-hero-greeting">Xin chào,</div>
+        <div class="timeline-hero-name" id="heroName">Thành viên</div>
+        <div class="timeline-hero-sub">Family Memory Hub · Dòng họ Đinh</div>
+        <div class="timeline-stats">
+          <div class="timeline-stat">
+            <div class="timeline-stat-num" id="statPhotos">0</div>
+            <div class="timeline-stat-label">Kỷ niệm</div>
+          </div>
+          <div class="timeline-stat">
+            <div class="timeline-stat-num">10</div>
+            <div class="timeline-stat-label">Gia đình</div>
+          </div>
+          <div class="timeline-stat">
+            <div class="timeline-stat-num" id="statMembers">0</div>
+            <div class="timeline-stat-label">Thành viên</div>
+          </div>
+        </div>
+      </div>
 
-            messageDiv.className = 'message success';
-            messageDiv.textContent = `✅ ${files.length} tệp được chọn và sẽ được lưu vào Google Drive của bạn!`;
+      <div id="timelineFeed">
+        <!-- Populated by JS -->
+        <div class="empty-state" id="timelineEmpty">
+          <div class="empty-state-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="5" width="22" height="18" rx="2" stroke="#1a3a7c" stroke-width="1.5"/><circle cx="10" cy="12" r="2.5" stroke="#1a3a7c" stroke-width="1.5"/><path d="M3 20l6-5 4 4 3-3 6 5" stroke="#1a3a7c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="empty-state-title">Chưa có kỷ niệm nào</div>
+          <div class="empty-state-sub">Hãy là người đầu tiên đăng<br>kỷ niệm của gia đình bạn!</div>
+          <button class="btn-primary" style="width:auto;padding:12px 24px;" onclick="switchTab('upload')">
+            Đăng kỷ niệm đầu tiên
+          </button>
+        </div>
+      </div>
+    </div>
 
-            // In production, here you would upload to Google Drive
-            console.log('Files to upload:', files);
+    <!-- TAB: FAMILY -->
+    <div class="tab-panel" id="tab-family">
+      <div class="family-section-header">
+        <div class="section-title">10 Gia đình</div>
+        <div class="section-count">Dòng họ Đinh</div>
+      </div>
+      <div class="family-grid" id="familyGrid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
 
-            // Simulate upload
-            setTimeout(() => {
-                loadGallery();
-                updateStats();
-                document.getElementById('fileInput').value = '';
-            }, 1000);
-        }
+    <!-- TAB: TREE -->
+    <div class="tab-panel" id="tab-tree">
+      <div class="tree-header">
+        <div class="tree-header-title">Cây Gia Phả</div>
+        <div class="tree-header-sub">Dòng họ Đinh · Family Tree</div>
+      </div>
+      <div class="tree-container">
+        <div style="text-align:center;">
+          <div class="tree-root-node">
+            <div class="tree-root-label">Ông Bà Nội</div>
+            <div class="tree-root-sub">Gốc dòng họ Đinh</div>
+          </div>
+          <div class="tree-connector-down"></div>
+          <div style="width:60%;height:1px;background:var(--border-gold);margin:0 auto;"></div>
+        </div>
+        <div class="tree-branches-row" id="treeBranches">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      <div style="padding:16px;text-align:center;">
+        <p style="font-size:12px;color:var(--ink-soft);font-family:var(--font-display);font-style:italic;">
+          Nhấn vào từng nhánh để xem kỷ niệm của gia đình đó
+        </p>
+      </div>
+    </div>
 
-        function loadGallery() {
-            const gallery = document.getElementById('gallery');
-            
-            // In production, fetch from Google Drive API
-            // For now, show placeholder
-            gallery.innerHTML = '<div class="gallery-empty">📸 Gallery đang được tải...</div>';
+    <!-- TAB: UPLOAD -->
+    <div class="tab-panel" id="tab-upload">
+      <div class="upload-header">
+        <div class="upload-header-title">Đăng Kỷ Niệm</div>
+        <div class="upload-header-sub">Lưu giữ khoảnh khắc của gia đình bạn</div>
+      </div>
 
-            // Simulate loading
-            setTimeout(() => {
-                gallery.innerHTML = '<div class="gallery-empty">Chưa có ảnh nào. Hãy tải lên ảnh đầu tiên!</div>';
-            }, 500);
-        }
+      <div class="upload-form">
+        <!-- Photo/Video Upload Zone -->
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="fileInput" multiple accept="image/*,video/mp4,video/quicktime" onchange="handleFileSelect(event)">
+          <div class="upload-zone-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M7 8l5-5 5 5" stroke="#1a3a7c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 16v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke="#1a3a7c" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="upload-zone-title">Chọn ảnh hoặc video</div>
+          <div class="upload-zone-sub">Kéo thả hoặc nhấn để chọn<br>JPG, PNG, MP4 · Tối đa 50MB/file</div>
+        </div>
 
-        function filterGallery() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            // Filter logic here
-            console.log('Searching for:', searchTerm);
-        }
+        <!-- Preview -->
+        <div class="upload-previews" id="uploadPreviews" style="display:none;"></div>
 
-        function updateStats() {
-            // In production, fetch real stats from Google Drive
-            document.getElementById('photoCount').textContent = '0';
-            document.getElementById('videoCount').textContent = '0';
-            document.getElementById('albumCount').textContent = '0';
-        }
+        <!-- Video Embed Section -->
+        <div class="video-embed-section">
+          <div class="video-embed-title">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="#1a3a7c" stroke-width="1.2"/><path d="M6 6l4 2-4 2V6z" fill="#1a3a7c"/></svg>
+            Nhúng video YouTube / Google Drive
+          </div>
+          <div class="video-embed-sub">Dành cho video dài — paste link vào đây thay vì upload trực tiếp</div>
+          <input type="url" class="form-input" id="videoUrl" placeholder="https://youtube.com/watch?v=... hoặc link Google Drive">
+        </div>
 
-        // Initialize Google Sign-In
-        window.onload = function() {
-            google.accounts.id.initialize({
-                client_id: '488152283026-qhe0iunbkjt17v3ktcalh5v71b5t6mgi.apps.googleusercontent.com',
-                callback: handleCredentialResponse
-            });
+        <!-- Caption -->
+        <div class="form-field">
+          <label class="form-label">Câu chuyện / Mô tả</label>
+          <textarea class="form-input" id="caption" rows="3" placeholder="Kể về khoảnh khắc này..." style="resize:vertical;"></textarea>
+        </div>
 
-            google.accounts.id.renderButton(
-                document.querySelector('.g_id_signin'),
-                {
-                    theme: 'outline',
-                    size: 'large',
-                    text: 'signin'
-                }
-            );
-        };
-    </script>
+        <!-- Family -->
+        <div class="form-field">
+          <label class="form-label">Gia đình</label>
+          <select class="form-input" id="familySelect">
+            <option value="">— Chọn gia đình —</option>
+            <option value="huong">Gia đình anh Hương</option>
+            <option value="quy">Gia đình chị Quý</option>
+            <option value="huong2">Gia đình anh Hường</option>
+            <option value="phuong">Gia đình chị Phượng</option>
+            <option value="tuan">Gia đình anh Tuấn</option>
+            <option value="tu">Gia đình anh Tú</option>
+            <option value="quang">Gia đình anh Quang</option>
+            <option value="vinh">Gia đình chị Vinh</option>
+            <option value="hung">Gia đình anh Hưng</option>
+            <option value="phat">Gia đình anh Phát</option>
+          </select>
+        </div>
+
+        <!-- Event Tags -->
+        <div class="form-field">
+          <label class="form-label">Sự kiện</label>
+          <div class="event-tags" id="eventTags">
+            <div class="event-tag" onclick="toggleTag(this)" data-value="gio">🕯️ Giỗ</div>
+            <div class="event-tag" onclick="toggleTag(this)" data-value="tet">🎊 Tết</div>
+            <div class="event-tag" onclick="toggleTag(this)" data-value="sinhnhat">🎂 Sinh nhật</div>
+            <div class="event-tag" onclick="toggleTag(this)" data-value="cuoi">💒 Đám cưới</div>
+            <div class="event-tag" onclick="toggleTag(this)" data-value="thoi_noi">👶 Thôi nôi</div>
+            <div class="event-tag" onclick="toggleTag(this)" data-value="du_lich">✈️ Du lịch</div>
+            <div class="event-tag" onclick="toggleTag(this)" data-value="thuong_ngay">📸 Ngày thường</div>
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="form-field">
+          <label class="form-label">Ngày chụp / xảy ra</label>
+          <input type="date" class="form-input" id="memoryDate">
+        </div>
+
+        <button class="btn-primary" onclick="submitMemory()" id="submitBtn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v9M5 8l4-4 4 4M2 14h14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Đăng kỷ niệm
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="bottom-nav-item active" id="nav-timeline" onclick="switchTab('timeline')">
+      <div class="nav-icon-bg">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+          <rect x="2" y="4" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+          <circle cx="7" cy="9" r="2" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M2 14l4-3.5 3 3 2.5-2.5L18 14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      Timeline
+    </button>
+    <button class="bottom-nav-item" id="nav-family" onclick="switchTab('family')">
+      <div class="nav-icon-bg">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="6" r="3" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M4 17c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <circle cx="3.5" cy="8.5" r="2" stroke="currentColor" stroke-width="1.3"/>
+          <circle cx="16.5" cy="8.5" r="2" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+      </div>
+      Gia đình
+    </button>
+    <button class="bottom-nav-item" id="nav-tree" onclick="switchTab('tree')">
+      <div class="nav-icon-bg">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+          <rect x="8" y="2" width="4" height="3" rx="1" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M10 5v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M5 8h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M5 8v2M15 8v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <rect x="2" y="10" width="6" height="3" rx="1" stroke="currentColor" stroke-width="1.3"/>
+          <rect x="12" y="10" width="6" height="3" rx="1" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M5 13v2M15 13v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <rect x="3" y="15" width="4" height="3" rx="1" stroke="currentColor" stroke-width="1.3"/>
+          <rect x="13" y="15" width="4" height="3" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+      </div>
+      Gia phả
+    </button>
+    <button class="bottom-nav-item" id="nav-upload" onclick="switchTab('upload')">
+      <div class="nav-icon-bg">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M10 6v8M7 9l3-3 3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      Đăng ảnh
+    </button>
+  </nav>
+
+</div><!-- /screen-app -->
+
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<script>
+/* ═══════════════════════════════════════
+   CONFIG — ĐỔI CÁC GIÁ TRỊ NÀY
+═══════════════════════════════════════ */
+const CONFIG = {
+  // 1. Lấy từ Google Cloud Console > APIs & Services > Credentials
+  GOOGLE_CLIENT_ID: '959703403312-1d5ogrbaljscd4mhaili270tmfh0ftgs.apps.googleusercontent.com',
+
+  // 2. Lấy từ Firebase Console > Project Settings > General
+  FIREBASE: {
+    apiKey: 'AIzaSyD0g6ewXYRbxB_LomvlQRRBMpyUX93XUfk',
+    authDomain: 'family-memory-hub-2872a.firebaseapp.com',
+    projectId: 'family-memory-hub-2872a',
+    storageBucket: 'family-memory-hub-2872a.firebasestorage.app',
+    messagingSenderId: '959703403312',
+    appId: '1:959703403312:web:a4ade61db03fc1490216f5'
+  },
+
+  // 3. Lấy từ Cloudinary Console > Settings > Upload
+  CLOUDINARY: {
+    cloudName: 'dlxn36ict',
+    uploadPreset: 'family_memory_hub'
+  },
+
+  // 4. Danh sách email được phép vào (whitelist)
+  // Thêm email của tất cả 20+ thành viên vào đây
+  ALLOWED_EMAILS: [
+    'dinhvanquochung@gmail.com',
+    // Thêm email các thành viên khác vào đây
+    // '__ALLOW_ALL__'  // Bỏ comment dòng này để test với mọi email
+  ]
+};
+
+/* ═══════════════════════════════════════
+   DATA — 10 NHÁNH GIA ĐÌNH
+═══════════════════════════════════════ */
+const FAMILIES = [
+  { id: 'huong',  name: 'Anh Hương',   initial: 'H', color: '#1a3a7c' },
+  { id: 'quy',    name: 'Chị Quý',     initial: 'Q', color: '#2451a8' },
+  { id: 'huong2', name: 'Anh Hường',   initial: 'H', color: '#b8862e' },
+  { id: 'phuong', name: 'Chị Phượng',  initial: 'P', color: '#0F6E56' },
+  { id: 'tuan',   name: 'Anh Tuấn',    initial: 'T', color: '#993C1D' },
+  { id: 'tu',     name: 'Anh Tú',      initial: 'T', color: '#534AB7' },
+  { id: 'quang',  name: 'Anh Quang',   initial: 'Q', color: '#1a5c7c' },
+  { id: 'vinh',   name: 'Chị Vinh',    initial: 'V', color: '#6b3a7c' },
+  { id: 'hung',   name: 'Anh Hưng',    initial: 'H', color: '#2e6b3a' },
+  { id: 'phat',   name: 'Anh Phát',    initial: 'P', color: '#7c3a1a' }
+];
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let state = {
+  user: null,
+  db: null,
+  auth: null,
+  memories: [],
+  selectedFiles: [],
+  selectedEvent: null,
+  isConfigured: false
+};
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+window.addEventListener('load', () => {
+  initFirebase();
+  initFamilyGrid();
+  initFamilyTree();
+  setDefaultDate();
+});
+
+function initFirebase() {
+  if (CONFIG.FIREBASE.apiKey === 'YOUR_FIREBASE_API_KEY') {
+    console.warn('Firebase not configured yet — running in demo mode');
+    state.isConfigured = false;
+    return;
+  }
+  try {
+    firebase.initializeApp(CONFIG.FIREBASE);
+    state.db   = firebase.firestore();
+    state.auth = firebase.auth();
+    state.isConfigured = true;
+
+    state.auth.onAuthStateChanged(user => {
+      if (user) {
+        onLoginSuccess({ name: user.displayName, email: user.email, picture: user.photoURL });
+      }
+    });
+  } catch(e) {
+    console.error('Firebase init error:', e);
+  }
+}
+
+/* ═══════════════════════════════════════
+   GOOGLE LOGIN
+═══════════════════════════════════════ */
+window.onload = function() {
+  if (CONFIG.GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID') {
+    google.accounts.id.initialize({
+      client_id: CONFIG.GOOGLE_CLIENT_ID,
+      callback: handleCredentialResponse
+    });
+    google.accounts.id.renderButton(
+      document.querySelector('.g_id_signin'),
+      { theme: 'outline', size: 'large', locale: 'vi', width: 300 }
+    );
+  }
+};
+
+function handleCredentialResponse(response) {
+  showLoading('Đang xác thực...');
+  try {
+    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+    const email   = payload.email;
+
+    // Check whitelist
+    const allowed = CONFIG.ALLOWED_EMAILS.includes('__ALLOW_ALL__') ||
+                    CONFIG.ALLOWED_EMAILS.includes(email);
+    if (!allowed) {
+      hideLoading();
+      showToast('Email này không có quyền truy cập', 'error');
+      return;
+    }
+
+    // If Firebase configured, sign in properly
+    if (state.isConfigured && state.auth) {
+      const credential = firebase.auth.GoogleAuthProvider.credential(response.credential);
+      state.auth.signInWithCredential(credential)
+        .then(result => {
+          onLoginSuccess({
+            name:    result.user.displayName,
+            email:   result.user.email,
+            picture: result.user.photoURL
+          });
+        })
+        .catch(() => {
+          // Fallback to JWT decode
+          onLoginSuccess({ name: payload.name, email: payload.email, picture: payload.picture });
+        });
+    } else {
+      onLoginSuccess({ name: payload.name, email: payload.email, picture: payload.picture });
+    }
+  } catch(e) {
+    hideLoading();
+    showToast('Đăng nhập thất bại', 'error');
+  }
+}
+
+function onLoginSuccess(user) {
+  state.user = user;
+  hideLoading();
+
+  // Update UI
+  showScreen('app');
+  updateNavAvatar(user);
+
+  document.getElementById('heroName').textContent  = user.name?.split(' ').pop() || 'Thành viên';
+  document.getElementById('ddName').textContent    = user.name || '';
+  document.getElementById('ddEmail').textContent   = user.email || '';
+
+  loadMemories();
+  showToast(`Chào mừng, ${user.name?.split(' ').pop()}! 👋`, 'success');
+}
+
+function logout() {
+  if (state.auth) state.auth.signOut();
+  state.user = null;
+  state.memories = [];
+  closeUserMenu();
+  showScreen('login');
+  showToast('Đã đăng xuất');
+}
+
+/* ═══════════════════════════════════════
+   UI HELPERS
+═══════════════════════════════════════ */
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+}
+
+function updateNavAvatar(user) {
+  const wrap = document.getElementById('navAvatarWrap');
+  if (user.picture) {
+    wrap.innerHTML = `<img src="${user.picture}" class="nav-avatar" alt="Avatar" onerror="this.replaceWith(makeInitialAvatar('${getInitial(user.name)}'))">`;
+  } else {
+    const el = makeInitialAvatar(getInitial(user.name));
+    wrap.innerHTML = '';
+    wrap.appendChild(el);
+  }
+}
+
+function makeInitialAvatar(letter) {
+  const div = document.createElement('div');
+  div.className = 'nav-avatar-placeholder';
+  div.textContent = letter;
+  return div;
+}
+
+function getInitial(name) {
+  return (name || '?').split(' ').pop()[0].toUpperCase();
+}
+
+function toggleUserMenu() {
+  document.getElementById('userDropdown').classList.toggle('open');
+}
+
+function closeUserMenu() {
+  document.getElementById('userDropdown').classList.remove('open');
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.user-menu')) closeUserMenu();
+});
+
+function showLoading(text) {
+  document.getElementById('loadingText').textContent = text || 'Đang tải...';
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('show');
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ═══════════════════════════════════════
+   FAMILY GRID
+═══════════════════════════════════════ */
+function initFamilyGrid() {
+  const grid = document.getElementById('familyGrid');
+  grid.innerHTML = FAMILIES.map(f => `
+    <div class="family-card" onclick="filterByFamily('${f.id}')">
+      <div class="family-card-avatar" style="background:${f.color};">${f.initial}</div>
+      <div class="family-card-name">Gia đình<br>${f.name}</div>
+      <div class="family-card-count" id="count-${f.id}">0 kỷ niệm</div>
+      <div class="family-card-preview">
+        <div class="family-preview-thumb"></div>
+        <div class="family-preview-thumb"></div>
+        <div class="family-preview-thumb"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterByFamily(familyId) {
+  switchTab('timeline');
+  renderMemories(state.memories.filter(m => m.familyId === familyId));
+  const fam = FAMILIES.find(f => f.id === familyId);
+  if (fam) showToast(`Đang xem: Gia đình ${fam.name}`);
+}
+
+/* ═══════════════════════════════════════
+   FAMILY TREE
+═══════════════════════════════════════ */
+function initFamilyTree() {
+  const container = document.getElementById('treeBranches');
+  container.innerHTML = FAMILIES.map(f => `
+    <div class="tree-branch-col">
+      <div class="tree-branch-line"></div>
+      <div class="tree-branch-node" onclick="filterByFamily('${f.id}')">
+        <div class="tree-branch-avatar" style="background:${f.color};">${f.initial}</div>
+        <div class="tree-branch-name">${f.name}</div>
+        <div class="tree-branch-count" id="tree-count-${f.id}">0 kỷ niệm</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ═══════════════════════════════════════
+   LOAD MEMORIES
+═══════════════════════════════════════ */
+async function loadMemories() {
+  if (!state.db) {
+    // Demo mode — show empty state
+    renderMemories([]);
+    return;
+  }
+  try {
+    const snap = await state.db
+      .collection('memories')
+      .orderBy('createdAt', 'desc')
+      .limit(50)
+      .get();
+
+    state.memories = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderMemories(state.memories);
+    updateStats();
+    updateFamilyCounts();
+  } catch(e) {
+    console.error('Load memories error:', e);
+    renderMemories([]);
+  }
+}
+
+function renderMemories(memories) {
+  const feed  = document.getElementById('timelineFeed');
+  const empty = document.getElementById('timelineEmpty');
+
+  if (!memories.length) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  // Group by month
+  const grouped = {};
+  memories.forEach(m => {
+    const date  = m.memoryDate ? new Date(m.memoryDate) : new Date(m.createdAt?.seconds * 1000 || Date.now());
+    const key   = date.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' });
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push({ ...m, _date: date });
+  });
+
+  let html = '';
+  Object.entries(grouped).forEach(([month, items]) => {
+    html += `
+      <div class="month-divider">
+        <div class="month-divider-line"></div>
+        <div class="month-divider-label">${month}</div>
+        <div class="month-divider-line"></div>
+      </div>
+    `;
+    items.forEach(m => { html += renderMemoryCard(m); });
+  });
+
+  feed.innerHTML = html + `<div style="height:8px;"></div>`;
+}
+
+function renderMemoryCard(m) {
+  const fam   = FAMILIES.find(f => f.id === m.familyId) || { name: 'Dòng họ Đinh', initial: 'Đ', color: '#1a3a7c' };
+  const date  = m._date ? m._date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+  const event = m.eventTag ? EVENT_LABELS[m.eventTag] || m.eventTag : '';
+
+  const mediaHtml = m.imageUrl
+    ? `<div class="memory-media"><img src="${m.imageUrl}" alt="${m.caption || ''}" loading="lazy" onclick="openImage('${m.imageUrl}')"></div>`
+    : m.videoUrl
+    ? `<div class="memory-media" style="background:#000;aspect-ratio:16/9;">${getVideoEmbed(m.videoUrl)}</div>`
+    : '';
+
+  const eventBadge = event
+    ? `<span class="memory-event-badge" style="background:var(--royal-pale);color:var(--royal);">${event}</span>`
+    : '';
+
+  return `
+    <div class="memory-card">
+      <div class="memory-card-header">
+        <div class="memory-avatar" style="background:${fam.color};">${fam.initial}</div>
+        <div class="memory-header-info">
+          <div class="memory-family-name">Gia đình ${fam.name}</div>
+          <div class="memory-date">${date}</div>
+        </div>
+        ${eventBadge}
+      </div>
+      ${mediaHtml}
+      ${m.caption ? `
+      <div class="memory-body">
+        <div class="memory-caption">${escapeHtml(m.caption)}</div>
+      </div>` : ''}
+      <div class="memory-footer">
+        <div class="memory-action">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5C4 1.5 1.5 3.7 1.5 6.5c0 1.2.5 2.3 1.3 3.1L2 12l2.6-.8c.7.3 1.5.5 2.4.5 3 0 5.5-2.2 5.5-5S10 1.5 7 1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          Bình luận
+        </div>
+        <div class="memory-action" onclick="shareMemory('${m.id}')">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="11" cy="3" r="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="3" cy="7" r="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="11" cy="11" r="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4.4 7.8l5.2 2.6M9.6 3.8L4.4 6.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Chia sẻ
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+const EVENT_LABELS = {
+  gio: '🕯️ Giỗ', tet: '🎊 Tết', sinhnhat: '🎂 Sinh nhật',
+  cuoi: '💒 Đám cưới', thoi_noi: '👶 Thôi nôi',
+  du_lich: '✈️ Du lịch', thuong_ngay: '📸 Ngày thường'
+};
+
+function getVideoEmbed(url) {
+  const ytMatch  = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+
+  if (ytMatch) {
+    return `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen style="border:none;"></iframe>`;
+  }
+  if (driveMatch) {
+    return `<iframe width="100%" height="100%" src="https://drive.google.com/file/d/${driveMatch[1]}/preview" frameborder="0" allowfullscreen style="border:none;"></iframe>`;
+  }
+  return `<a href="${url}" target="_blank" style="color:white;font-size:13px;display:flex;align-items:center;height:100%;justify-content:center;">Xem video ↗</a>`;
+}
+
+function updateStats() {
+  document.getElementById('statPhotos').textContent  = state.memories.length;
+  document.getElementById('statMembers').textContent = '20+';
+}
+
+function updateFamilyCounts() {
+  FAMILIES.forEach(f => {
+    const count = state.memories.filter(m => m.familyId === f.id).length;
+    const el1 = document.getElementById('count-' + f.id);
+    const el2 = document.getElementById('tree-count-' + f.id);
+    if (el1) el1.textContent = count + ' kỷ niệm';
+    if (el2) el2.textContent = count + ' kỷ niệm';
+  });
+}
+
+/* ═══════════════════════════════════════
+   UPLOAD
+═══════════════════════════════════════ */
+function setDefaultDate() {
+  const d = document.getElementById('memoryDate');
+  if (d) d.value = new Date().toISOString().split('T')[0];
+}
+
+function handleFileSelect(event) {
+  const files = Array.from(event.target.files);
+  if (!files.length) return;
+
+  state.selectedFiles = files;
+  const previews = document.getElementById('uploadPreviews');
+  previews.style.display = 'grid';
+  previews.innerHTML = '';
+
+  files.slice(0, 9).forEach((file, i) => {
+    const item = document.createElement('div');
+    item.className = 'upload-preview-item';
+
+    if (file.type.startsWith('image/')) {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.alt = file.name;
+      item.appendChild(img);
+    } else {
+      item.style.cssText = 'display:flex;align-items:center;justify-content:center;background:#e8eef8;';
+      item.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 10l5 3-5 3V10z" stroke="#1a3a7c" stroke-width="1.5"/><rect x="2" y="5" width="15" height="14" rx="2" stroke="#1a3a7c" stroke-width="1.5"/></svg>';
+    }
+
+    const removeBtn = document.createElement('div');
+    removeBtn.className = 'upload-preview-remove';
+    removeBtn.innerHTML = '✕';
+    removeBtn.onclick = () => {
+      state.selectedFiles.splice(i, 1);
+      item.remove();
+      if (!state.selectedFiles.length) previews.style.display = 'none';
+    };
+    item.appendChild(removeBtn);
+    previews.appendChild(item);
+  });
+}
+
+function toggleTag(el) {
+  const wasSelected = el.classList.contains('selected');
+  document.querySelectorAll('.event-tag').forEach(t => t.classList.remove('selected'));
+  if (!wasSelected) {
+    el.classList.add('selected');
+    state.selectedEvent = el.dataset.value;
+  } else {
+    state.selectedEvent = null;
+  }
+}
+
+async function submitMemory() {
+  const caption   = document.getElementById('caption').value.trim();
+  const familyId  = document.getElementById('familySelect').value;
+  const videoUrl  = document.getElementById('videoUrl').value.trim();
+  const date      = document.getElementById('memoryDate').value;
+
+  if (!familyId) { showToast('Vui lòng chọn gia đình', 'error'); return; }
+  if (!state.selectedFiles.length && !videoUrl && !caption) {
+    showToast('Vui lòng thêm ảnh, video, hoặc mô tả', 'error'); return;
+  }
+
+  if (!state.isConfigured) {
+    showToast('Cần cấu hình Firebase + Cloudinary trước', 'error'); return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  showLoading('Đang đăng kỷ niệm...');
+
+  try {
+    let imageUrl = null;
+
+    // Upload to Cloudinary
+    if (state.selectedFiles.length) {
+      const file     = state.selectedFiles[0];
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CONFIG.CLOUDINARY.uploadPreset);
+      formData.append('folder', 'family_memory_hub');
+
+      const res  = await fetch(`https://api.cloudinary.com/v1_1/${CONFIG.CLOUDINARY.cloudName}/auto/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      imageUrl   = data.secure_url;
+    }
+
+    // Save to Firestore
+    const memory = {
+      caption,
+      familyId,
+      eventTag:    state.selectedEvent || null,
+      memoryDate:  date || new Date().toISOString().split('T')[0],
+      imageUrl,
+      videoUrl:    videoUrl || null,
+      uploadedBy:  { name: state.user.name, email: state.user.email },
+      createdAt:   firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    await state.db.collection('memories').add(memory);
+
+    // Reset form
+    document.getElementById('caption').value  = '';
+    document.getElementById('videoUrl').value = '';
+    document.getElementById('familySelect').value = '';
+    document.querySelectorAll('.event-tag').forEach(t => t.classList.remove('selected'));
+    state.selectedFiles = [];
+    state.selectedEvent = null;
+    document.getElementById('uploadPreviews').style.display = 'none';
+    document.getElementById('uploadPreviews').innerHTML = '';
+
+    hideLoading();
+    btn.disabled = false;
+    showToast('Đã đăng kỷ niệm thành công! 🎉', 'success');
+    switchTab('timeline');
+    await loadMemories();
+
+  } catch(e) {
+    hideLoading();
+    btn.disabled = false;
+    showToast('Có lỗi xảy ra: ' + e.message, 'error');
+    console.error(e);
+  }
+}
+
+/* ═══════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════ */
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function openImage(url) {
+  window.open(url, '_blank');
+}
+
+function shareMemory(id) {
+  const url = window.location.origin + '?memory=' + id;
+  if (navigator.share) {
+    navigator.share({ title: 'Kỷ niệm Dòng họ Đinh', url });
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url);
+    showToast('Đã sao chép link chia sẻ');
+  }
+}
+
+/* Drag-and-drop on upload zone */
+const zone = document.getElementById('uploadZone');
+if (zone) {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    const dt = e.dataTransfer;
+    if (dt.files.length) handleFileSelect({ target: { files: dt.files } });
+  });
+}
+</script>
 </body>
 </html>
