@@ -1895,9 +1895,10 @@ function initFirebase() {
     return;
   }
   try {
-    firebase.initializeApp(CONFIG.FIREBASE);
-    state.db   = firebase.firestore();
-    state.auth = firebase.auth();
+    // Reuse existing app instance if already initialized (avoids duplicate-app error)
+    const app  = firebase.apps.length ? firebase.app() : firebase.initializeApp(CONFIG.FIREBASE);
+    state.db   = firebase.firestore(app);
+    state.auth = firebase.auth(app);
     state.isConfigured = true;
 
     state.auth.onAuthStateChanged(user => {
@@ -1907,6 +1908,7 @@ function initFirebase() {
     });
   } catch(e) {
     console.error('Firebase init error:', e);
+    showToast('Lỗi khởi tạo Firebase: ' + e.message, 'error');
   }
 }
 
@@ -1952,9 +1954,15 @@ function handleCredentialResponse(response) {
             picture: result.user.photoURL
           });
         })
-        .catch(() => {
-          // Fallback to JWT decode
-          onLoginSuccess({ name: payload.name, email: payload.email, picture: payload.picture });
+        .catch(err => {
+          hideLoading();
+          console.error('Firebase signIn error:', err.code, err.message);
+          if (err.code === 'auth/unauthorized-domain') {
+            showToast('Domain chưa được cấp phép — thêm vào Firebase Console > Auth > Authorized domains', 'error');
+          } else {
+            showToast('Lỗi xác thực Firebase: ' + (err.code || err.message), 'error');
+          }
+          // Do NOT fall through: without Firebase Auth, Firestore writes will fail.
         });
     } else {
       onLoginSuccess({ name: payload.name, email: payload.email, picture: payload.picture });
@@ -2121,6 +2129,9 @@ async function loadMemories() {
     updateFamilyCounts();
   } catch(e) {
     console.error('Load memories error:', e);
+    if (e.code === 'permission-denied') {
+      showToast('Lỗi quyền truy cập Firestore — kiểm tra security rules', 'error');
+    }
     renderMemories([]);
   }
 }
@@ -2345,6 +2356,11 @@ async function submitMemory() {
   if (!state.isConfigured) {
     showToast('Cần cấu hình Firebase + Cloudinary trước', 'error'); return;
   }
+  if (!state.auth?.currentUser) {
+    showToast('Phiên đăng nhập hết hạn — vui lòng đăng nhập lại', 'error');
+    setTimeout(() => showScreen('login'), 1500);
+    return;
+  }
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
@@ -2396,6 +2412,9 @@ async function submitMemory() {
 
   showLoading('Đang lưu kỷ niệm...');
   try {
+    // Force-refresh the ID token so Firestore never sees a stale/expired token
+    await state.auth.currentUser.getIdToken(/* forceRefresh */ true);
+
     const memory = {
       caption,
       familyId,
@@ -2594,6 +2613,7 @@ function renderComments(memId, comments) {
 
 async function postComment(memId) {
   if (!state.user) { showToast('Vui lòng đăng nhập để bình luận', 'error'); return; }
+  if (!state.auth?.currentUser) { showToast('Phiên đăng nhập hết hạn — vui lòng đăng nhập lại', 'error'); return; }
   const input = document.getElementById('comment-input-' + memId);
   if (!input) return;
   const text = input.value.trim();
@@ -2603,6 +2623,7 @@ async function postComment(memId) {
   input.value    = '';
   input.disabled = true;
   try {
+    await state.auth.currentUser.getIdToken(true);
     await state.db.collection('comments').doc(memId).collection('items').add({
       text,
       author: { name: state.user.name, email: state.user.email, picture: state.user.picture || null },
