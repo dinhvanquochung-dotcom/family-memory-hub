@@ -1213,6 +1213,273 @@
       .family-grid { grid-template-columns: repeat(4, 1fr); padding: 0 24px 24px; }
       .upload-form { max-width: 520px; margin: 0 auto; }
     }
+
+    /* ═══════════════════════════════════════
+       LIGHTBOX
+    ═══════════════════════════════════════ */
+    .lightbox-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.93);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox-overlay.open {
+      display: flex;
+      animation: lbFadeIn 0.15s ease;
+    }
+    @keyframes lbFadeIn { from { opacity:0; } to { opacity:1; } }
+    .lightbox-close {
+      position: absolute;
+      top: 14px; right: 14px;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10;
+      transition: background 0.2s;
+      line-height: 1;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,0.25); }
+    .lightbox-img-wrap {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 56px 50px;
+    }
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.7);
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+      z-index: 10;
+      line-height: 1;
+    }
+    .lightbox-nav:hover { background: rgba(255,255,255,0.25); }
+    .lightbox-nav.prev { left: 12px; }
+    .lightbox-nav.next { right: 12px; }
+    .lightbox-nav[hidden] { display: none; }
+    .lightbox-dots {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 7px;
+    }
+    .lightbox-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transition: background 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .lightbox-dot.active {
+      background: var(--gold-bright);
+      transform: scale(1.35);
+    }
+
+    /* ═══════════════════════════════════════
+       MULTI-IMAGE GRID IN CARD
+    ═══════════════════════════════════════ */
+    .memory-images-grid { display: grid; gap: 2px; }
+    .memory-images-grid.count-1 { grid-template-columns: 1fr; }
+    .memory-images-grid.count-2 { grid-template-columns: 1fr 1fr; }
+    .memory-images-grid.count-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .memory-images-grid.count-many { grid-template-columns: 1fr 1fr; }
+    .grid-img {
+      overflow: hidden;
+      position: relative;
+      background: var(--royal-pale);
+      cursor: pointer;
+    }
+    .memory-images-grid.count-1 .grid-img { aspect-ratio: 4/3; }
+    .memory-images-grid.count-2 .grid-img,
+    .memory-images-grid.count-3 .grid-img,
+    .memory-images-grid.count-many .grid-img { aspect-ratio: 1; }
+    .grid-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.25s;
+    }
+    .grid-img:hover img { transform: scale(1.04); }
+    .grid-img-more {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.52);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 24px;
+      font-weight: 700;
+      font-family: var(--font-display);
+    }
+
+    /* ═══════════════════════════════════════
+       UPLOAD PROGRESS BARS
+    ═══════════════════════════════════════ */
+    .upload-progress-list {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px 12px;
+      margin-bottom: 16px;
+    }
+    .upload-progress-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .upload-progress-item:last-child { border-bottom: none; }
+    .upload-prog-thumb {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--royal-pale);
+    }
+    .upload-prog-info { flex: 1; min-width: 0; }
+    .upload-prog-name {
+      font-size: 12px;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 5px;
+    }
+    .upload-prog-bar-wrap {
+      height: 4px;
+      background: var(--royal-pale);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .upload-prog-bar {
+      height: 100%;
+      background: var(--royal);
+      border-radius: 2px;
+      transition: width 0.2s;
+      width: 0%;
+    }
+    .upload-prog-bar.done { background: #1a6b3a; width: 100% !important; }
+    .upload-prog-bar.err  { background: #c0392b; }
+    .upload-prog-status {
+      font-size: 11px;
+      color: var(--ink-soft);
+      flex-shrink: 0;
+      min-width: 28px;
+      text-align: right;
+    }
+    .upload-prog-status.done { color: #1a6b3a; }
+    .upload-prog-status.err  { color: #c0392b; }
+
+    /* ═══════════════════════════════════════
+       COMMENT SECTION
+    ═══════════════════════════════════════ */
+    .comment-section {
+      border-top: 1px solid var(--border);
+      padding: 12px 14px 14px;
+      animation: cmtIn 0.18s ease;
+    }
+    @keyframes cmtIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+    .comment-list { margin-bottom: 10px; }
+    .comment-item {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .comment-item:last-child { margin-bottom: 0; }
+    .comment-avi {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      object-fit: cover;
+    }
+    .comment-avi-init {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--royal-mid);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600;
+      color: var(--white);
+      flex-shrink: 0;
+    }
+    .comment-bubble {
+      background: var(--royal-ghost);
+      border-radius: 0 10px 10px 10px;
+      padding: 7px 10px;
+      flex: 1; min-width: 0;
+    }
+    .comment-author {
+      font-size: 11px; font-weight: 600;
+      color: var(--royal);
+    }
+    .comment-time {
+      font-size: 10px; color: var(--ink-soft);
+      margin-left: 6px; font-weight: 400;
+    }
+    .comment-text {
+      font-size: 13px; color: var(--ink);
+      line-height: 1.45; word-break: break-word;
+      margin-top: 2px;
+    }
+    .comment-input-row {
+      display: flex; gap: 8px; align-items: center;
+      margin-top: 6px;
+    }
+    .comment-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 13px; color: var(--ink);
+      background: var(--white);
+      outline: none; font-family: var(--font-body);
+      transition: border-color 0.15s;
+    }
+    .comment-input:focus { border-color: var(--royal-mid); }
+    .comment-send {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--royal);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background 0.15s;
+    }
+    .comment-send:hover { background: var(--royal-mid); }
+    .comment-empty {
+      font-size: 12px; color: var(--ink-soft);
+      text-align: center; padding: 6px 0;
+      font-style: italic;
+    }
+    .comment-loading {
+      font-size: 12px; color: var(--ink-soft);
+      text-align: center; padding: 8px 0;
+    }
   </style>
 </head>
 <body>
@@ -1464,6 +1731,9 @@
           <input type="date" class="form-input" id="memoryDate">
         </div>
 
+        <!-- Batch upload progress -->
+        <div id="uploadProgressList" class="upload-progress-list" style="display:none;"></div>
+
         <button class="btn-primary" onclick="submitMemory()" id="submitBtn">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v9M5 8l4-4 4 4M2 14h14" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Đăng kỷ niệm
@@ -1524,6 +1794,19 @@
   </nav>
 
 </div><!-- /screen-app -->
+
+<!-- ═══════════════════════════════════════
+     LIGHTBOX
+═══════════════════════════════════════ -->
+<div class="lightbox-overlay" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Đóng">✕</button>
+  <button class="lightbox-nav prev" id="lbPrev" onclick="lbNav(-1)">&#8249;</button>
+  <div class="lightbox-img-wrap">
+    <img class="lightbox-img" id="lbImg" src="" alt="" draggable="false">
+  </div>
+  <button class="lightbox-nav next" id="lbNext" onclick="lbNav(1)">&#8250;</button>
+  <div class="lightbox-dots" id="lbDots"></div>
+</div>
 
 <!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -1589,6 +1872,11 @@ let state = {
   selectedEvent: null,
   isConfigured: false
 };
+
+const memoryImageMap   = {};
+const commentListeners = {};
+let lb = { images: [], idx: 0 };
+let lbTouchX = 0;
 
 /* ═══════════════════════════════════════
    INIT
@@ -1838,6 +2126,9 @@ async function loadMemories() {
 }
 
 function renderMemories(memories) {
+  Object.values(commentListeners).forEach(u => u && u());
+  Object.keys(commentListeners).forEach(k => delete commentListeners[k]);
+
   const feed  = document.getElementById('timelineFeed');
   const empty = document.getElementById('timelineEmpty');
 
@@ -1876,15 +2167,30 @@ function renderMemoryCard(m) {
   const date  = m._date ? m._date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
   const event = m.eventTag ? EVENT_LABELS[m.eventTag] || m.eventTag : '';
 
-  const mediaHtml = m.imageUrl
-    ? `<div class="memory-media"><img src="${m.imageUrl}" alt="${m.caption || ''}" loading="lazy" onclick="openImage('${m.imageUrl}')"></div>`
-    : m.videoUrl
-    ? `<div class="memory-media" style="background:#000;aspect-ratio:16/9;">${getVideoEmbed(m.videoUrl)}</div>`
-    : '';
+  const images = m.imageUrls || (m.imageUrl ? [m.imageUrl] : []);
+  let mediaHtml = '';
+  if (images.length) {
+    mediaHtml = buildImagesGrid(images, m.id);
+  } else if (m.videoUrl) {
+    mediaHtml = `<div class="memory-media" style="background:#000;aspect-ratio:16/9;">${getVideoEmbed(m.videoUrl)}</div>`;
+  }
 
   const eventBadge = event
     ? `<span class="memory-event-badge" style="background:var(--royal-pale);color:var(--royal);">${event}</span>`
     : '';
+
+  const commentSection = m.id ? `
+    <div class="comment-section" id="comments-${m.id}" style="display:none;">
+      <div class="comment-list" id="comment-list-${m.id}"></div>
+      <div class="comment-input-row">
+        <input type="text" class="comment-input" id="comment-input-${m.id}"
+               placeholder="Viết bình luận..."
+               onkeydown="if(event.key==='Enter')postComment('${m.id}')">
+        <button class="comment-send" onclick="postComment('${m.id}')" aria-label="Gửi">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 3l5 4-5 4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>` : '';
 
   return `
     <div class="memory-card">
@@ -1902,7 +2208,7 @@ function renderMemoryCard(m) {
         <div class="memory-caption">${escapeHtml(m.caption)}</div>
       </div>` : ''}
       <div class="memory-footer">
-        <div class="memory-action">
+        <div class="memory-action" onclick="toggleComments('${m.id}')">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5C4 1.5 1.5 3.7 1.5 6.5c0 1.2.5 2.3 1.3 3.1L2 12l2.6-.8c.7.3 1.5.5 2.4.5 3 0 5.5-2.2 5.5-5S10 1.5 7 1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
           Bình luận
         </div>
@@ -1911,8 +2217,30 @@ function renderMemoryCard(m) {
           Chia sẻ
         </div>
       </div>
+      ${commentSection}
     </div>
   `;
+}
+
+function buildImagesGrid(images, memId) {
+  if (memId) memoryImageMap[memId] = images;
+  const count  = images.length;
+  const maxShow = 4;
+  const show   = Math.min(count, maxShow);
+  const cls    = count === 1 ? 'count-1' : count === 2 ? 'count-2' : count === 3 ? 'count-3' : 'count-many';
+
+  let html = '';
+  for (let i = 0; i < show; i++) {
+    const isOverlay = (i === maxShow - 1 && count > maxShow);
+    const openFn = memId
+      ? `openLightboxById('${memId}',${i})`
+      : `openLightbox(${JSON.stringify(images)},${i})`;
+    html += `<div class="grid-img" onclick="${openFn}">
+      <img src="${images[i]}" alt="Ảnh ${i+1}" loading="lazy">
+      ${isOverlay ? `<div class="grid-img-more">+${count - maxShow + 1}</div>` : ''}
+    </div>`;
+  }
+  return `<div class="memory-images-grid ${cls}">${html}</div>`;
 }
 
 const EVENT_LABELS = {
@@ -2005,73 +2333,99 @@ function toggleTag(el) {
 }
 
 async function submitMemory() {
-  const caption   = document.getElementById('caption').value.trim();
-  const familyId  = document.getElementById('familySelect').value;
-  const videoUrl  = document.getElementById('videoUrl').value.trim();
-  const date      = document.getElementById('memoryDate').value;
+  const caption  = document.getElementById('caption').value.trim();
+  const familyId = document.getElementById('familySelect').value;
+  const videoUrl = document.getElementById('videoUrl').value.trim();
+  const date     = document.getElementById('memoryDate').value;
 
   if (!familyId) { showToast('Vui lòng chọn gia đình', 'error'); return; }
   if (!state.selectedFiles.length && !videoUrl && !caption) {
     showToast('Vui lòng thêm ảnh, video, hoặc mô tả', 'error'); return;
   }
-
   if (!state.isConfigured) {
     showToast('Cần cấu hình Firebase + Cloudinary trước', 'error'); return;
   }
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
-  showLoading('Đang đăng kỷ niệm...');
 
-  try {
-    let imageUrl = null;
+  const imageUrls = [];
 
-    // Upload to Cloudinary
-    if (state.selectedFiles.length) {
-      const file     = state.selectedFiles[0];
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', CONFIG.CLOUDINARY.uploadPreset);
-      formData.append('folder', 'family_memory_hub');
+  if (state.selectedFiles.length) {
+    // Hide preview grid, show progress list
+    document.getElementById('uploadPreviews').style.display = 'none';
+    const progList = document.getElementById('uploadProgressList');
+    progList.style.display = 'block';
+    progList.innerHTML = state.selectedFiles.map((file, i) => {
+      const thumb = file.type.startsWith('image/')
+        ? `<img class="upload-prog-thumb" src="${URL.createObjectURL(file)}" alt="">`
+        : `<div class="upload-prog-thumb" style="display:flex;align-items:center;justify-content:center;">
+             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="11" height="12" rx="1.5" stroke="#1a3a7c" stroke-width="1.2"/><path d="M11 8l5 2.5-5 2.5V8z" fill="#1a3a7c"/></svg>
+           </div>`;
+      return `
+        <div class="upload-progress-item" id="pi-${i}">
+          ${thumb}
+          <div class="upload-prog-info">
+            <div class="upload-prog-name">${escapeHtml(file.name)}</div>
+            <div class="upload-prog-bar-wrap">
+              <div class="upload-prog-bar" id="pb-${i}"></div>
+            </div>
+          </div>
+          <div class="upload-prog-status" id="ps-${i}">0%</div>
+        </div>`;
+    }).join('');
 
-      const res  = await fetch(`https://api.cloudinary.com/v1_1/${CONFIG.CLOUDINARY.cloudName}/auto/upload`, {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
-      imageUrl   = data.secure_url;
+    for (let i = 0; i < state.selectedFiles.length; i++) {
+      const bar    = document.getElementById('pb-' + i);
+      const status = document.getElementById('ps-' + i);
+      try {
+        const url = await uploadToCloudinary(state.selectedFiles[i], pct => {
+          if (bar) bar.style.width = pct + '%';
+          if (status) status.textContent = pct + '%';
+        });
+        imageUrls.push(url);
+        if (bar) bar.classList.add('done');
+        if (status) { status.textContent = '✓'; status.className = 'upload-prog-status done'; }
+      } catch(e) {
+        if (bar) { bar.classList.add('err'); }
+        if (status) { status.textContent = '✗'; status.className = 'upload-prog-status err'; }
+        console.error('Upload lỗi:', state.selectedFiles[i].name, e);
+      }
     }
+  }
 
-    // Save to Firestore
+  showLoading('Đang lưu kỷ niệm...');
+  try {
     const memory = {
       caption,
       familyId,
-      eventTag:    state.selectedEvent || null,
-      memoryDate:  date || new Date().toISOString().split('T')[0],
-      imageUrl,
-      videoUrl:    videoUrl || null,
-      uploadedBy:  { name: state.user.name, email: state.user.email },
-      createdAt:   firebase.firestore.FieldValue.serverTimestamp()
+      eventTag:   state.selectedEvent || null,
+      memoryDate: date || new Date().toISOString().split('T')[0],
+      imageUrls:  imageUrls.length ? imageUrls : null,
+      imageUrl:   imageUrls[0] || null,
+      videoUrl:   videoUrl || null,
+      uploadedBy: { name: state.user.name, email: state.user.email },
+      createdAt:  firebase.firestore.FieldValue.serverTimestamp()
     };
-
     await state.db.collection('memories').add(memory);
 
     // Reset form
-    document.getElementById('caption').value  = '';
-    document.getElementById('videoUrl').value = '';
-    document.getElementById('familySelect').value = '';
+    document.getElementById('caption').value       = '';
+    document.getElementById('videoUrl').value      = '';
+    document.getElementById('familySelect').value  = '';
     document.querySelectorAll('.event-tag').forEach(t => t.classList.remove('selected'));
     state.selectedFiles = [];
     state.selectedEvent = null;
-    document.getElementById('uploadPreviews').style.display = 'none';
-    document.getElementById('uploadPreviews').innerHTML = '';
+    document.getElementById('uploadPreviews').style.display      = 'none';
+    document.getElementById('uploadPreviews').innerHTML          = '';
+    document.getElementById('uploadProgressList').style.display  = 'none';
+    document.getElementById('uploadProgressList').innerHTML      = '';
 
     hideLoading();
     btn.disabled = false;
     showToast('Đã đăng kỷ niệm thành công! 🎉', 'success');
     switchTab('timeline');
     await loadMemories();
-
   } catch(e) {
     hideLoading();
     btn.disabled = false;
@@ -2080,15 +2434,201 @@ async function submitMemory() {
   }
 }
 
+async function uploadToCloudinary(file, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const fd  = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CONFIG.CLOUDINARY.uploadPreset);
+    fd.append('folder', 'family_memory_hub');
+
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) onProgress(Math.round(e.loaded / e.total * 100));
+    };
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        resolve(JSON.parse(xhr.responseText).secure_url);
+      } else {
+        reject(new Error('HTTP ' + xhr.status));
+      }
+    };
+    xhr.onerror = () => reject(new Error('Network error'));
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CONFIG.CLOUDINARY.cloudName}/auto/upload`);
+    xhr.send(fd);
+  });
+}
+
+/* ═══════════════════════════════════════
+   LIGHTBOX
+═══════════════════════════════════════ */
+function openLightboxById(memId, startIdx) {
+  const imgs = memoryImageMap[memId];
+  if (imgs && imgs.length) openLightbox(imgs, startIdx);
+}
+
+function openLightbox(images, startIdx) {
+  lb.images = Array.isArray(images) ? images : [images];
+  lb.idx    = startIdx || 0;
+  lbRender();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function lbNav(dir) {
+  if (lb.images.length < 2) return;
+  lb.idx = (lb.idx + dir + lb.images.length) % lb.images.length;
+  lbRender();
+}
+
+function lbRender() {
+  const img     = document.getElementById('lbImg');
+  const prev    = document.getElementById('lbPrev');
+  const next    = document.getElementById('lbNext');
+  const dots    = document.getElementById('lbDots');
+  const hasMany = lb.images.length > 1;
+
+  img.src = lb.images[lb.idx] || '';
+  if (hasMany) { prev.removeAttribute('hidden'); next.removeAttribute('hidden'); }
+  else         { prev.setAttribute('hidden',''); next.setAttribute('hidden',''); }
+
+  dots.innerHTML = hasMany
+    ? lb.images.map((_, i) => `<div class="lightbox-dot${i===lb.idx?' active':''}" onclick="lbGoTo(${i})"></div>`).join('')
+    : '';
+}
+
+function lbGoTo(i) { lb.idx = i; lbRender(); }
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'Escape')      closeLightbox();
+  if (e.key === 'ArrowLeft')   lbNav(-1);
+  if (e.key === 'ArrowRight')  lbNav(1);
+});
+
+// Touch swipe
+document.addEventListener('touchstart', e => {
+  if (document.getElementById('lightbox').classList.contains('open'))
+    lbTouchX = e.touches[0].clientX;
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  const dx = e.changedTouches[0].clientX - lbTouchX;
+  if (Math.abs(dx) > 48) lbNav(dx < 0 ? 1 : -1);
+}, { passive: true });
+
+/* ═══════════════════════════════════════
+   COMMENTS
+═══════════════════════════════════════ */
+function toggleComments(memId) {
+  if (!memId) return;
+  const sec = document.getElementById('comments-' + memId);
+  if (!sec) return;
+  const isOpen = sec.style.display !== 'none' && sec.style.display !== '';
+  if (isOpen) {
+    sec.style.display = 'none';
+    if (commentListeners[memId]) { commentListeners[memId](); delete commentListeners[memId]; }
+  } else {
+    sec.style.display = 'block';
+    loadComments(memId);
+  }
+}
+
+function loadComments(memId) {
+  const listEl = document.getElementById('comment-list-' + memId);
+  if (!listEl) return;
+  if (!state.db) { listEl.innerHTML = ''; return; }
+
+  listEl.innerHTML = '<div class="comment-loading">Đang tải...</div>';
+
+  const unsub = state.db
+    .collection('comments').doc(memId).collection('items')
+    .orderBy('createdAt', 'asc')
+    .onSnapshot(snap => {
+      renderComments(memId, snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, err => {
+      console.error('Comments error:', err);
+      if (listEl) listEl.innerHTML = '';
+    });
+
+  commentListeners[memId] = unsub;
+}
+
+function renderComments(memId, comments) {
+  const listEl = document.getElementById('comment-list-' + memId);
+  if (!listEl) return;
+
+  if (!comments.length) {
+    listEl.innerHTML = '<div class="comment-empty">Chưa có bình luận nào. Hãy là người đầu tiên!</div>';
+    return;
+  }
+
+  listEl.innerHTML = comments.map(c => {
+    const ts  = c.createdAt?.seconds ? new Date(c.createdAt.seconds * 1000) : null;
+    const ago = ts ? timeAgo(ts) : 'vừa xong';
+    const avi = c.author?.picture
+      ? `<img class="comment-avi" src="${c.author.picture}" alt="${escapeHtml(c.author?.name||'')}">`
+      : `<div class="comment-avi-init">${getInitial(c.author?.name)}</div>`;
+    return `
+      <div class="comment-item">
+        ${avi}
+        <div class="comment-bubble">
+          <span class="comment-author">${escapeHtml(c.author?.name||'Ẩn danh')}</span>
+          <span class="comment-time">${ago}</span>
+          <div class="comment-text">${escapeHtml(c.text||'')}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function postComment(memId) {
+  if (!state.user) { showToast('Vui lòng đăng nhập để bình luận', 'error'); return; }
+  const input = document.getElementById('comment-input-' + memId);
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  if (!state.db) { showToast('Cần cấu hình Firebase', 'error'); return; }
+
+  input.value    = '';
+  input.disabled = true;
+  try {
+    await state.db.collection('comments').doc(memId).collection('items').add({
+      text,
+      author: { name: state.user.name, email: state.user.email, picture: state.user.picture || null },
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch(e) {
+    showToast('Lỗi đăng bình luận', 'error');
+    console.error(e);
+  } finally {
+    input.disabled = false;
+    input.focus();
+  }
+}
+
+function timeAgo(date) {
+  const diff = Date.now() - date.getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1)   return 'vừa xong';
+  if (m < 60)  return m + ' phút trước';
+  const h = Math.floor(m / 60);
+  if (h < 24)  return h + ' giờ trước';
+  const d = Math.floor(h / 24);
+  if (d < 7)   return d + ' ngày trước';
+  return date.toLocaleDateString('vi-VN');
+}
+
 /* ═══════════════════════════════════════
    UTILITIES
 ═══════════════════════════════════════ */
 function escapeHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function openImage(url) {
-  window.open(url, '_blank');
 }
 
 function shareMemory(id) {
