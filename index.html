@@ -228,7 +228,8 @@
     }
 
     .nav-brand {
-      display: flex; align-items: center; gap: 10px;
+      display: flex; align-items: center; gap: 12px;
+      position: absolute; left: 50%; transform: translateX(-50%);
     }
 
     .nav-crest {
@@ -248,7 +249,7 @@
 
     .nav-title {
       font-family: var(--font-display);
-      font-size: 15px;
+      font-size: 30px;
       font-weight: 600;
       color: var(--white);
       letter-spacing: 0.01em;
@@ -257,9 +258,10 @@
 
     .nav-tagline {
       font-size: 9px;
-      color: rgba(255,255,255,0.45);
+      color: var(--gold-bright);
       font-style: italic;
       font-family: var(--font-display);
+      letter-spacing: 0.06em; opacity: 0.85;
     }
 
     .nav-right {
@@ -433,9 +435,10 @@
 
     .timeline-hero-sub {
       font-size: 12px;
-      color: rgba(255,255,255,0.45);
+      color: var(--gold-bright);
       font-style: italic;
       font-family: var(--font-display);
+      letter-spacing: 0.06em; opacity: 0.85;
     }
 
     .timeline-stats {
@@ -774,9 +777,10 @@
 
     .tree-header-sub {
       font-size: 12px;
-      color: rgba(255,255,255,0.45);
+      color: var(--gold-bright);
       font-style: italic;
       font-family: var(--font-display);
+      letter-spacing: 0.06em; opacity: 0.85;
     }
 
     .tree-container {
@@ -951,7 +955,7 @@
     }
 
     .upload-zone-title {
-      font-size: 15px;
+      font-size: 30px;
       font-weight: 600;
       color: var(--ink);
       margin-bottom: 4px;
@@ -1091,7 +1095,7 @@
       background: var(--royal);
       color: var(--white);
       border-radius: var(--radius-md);
-      font-size: 15px;
+      font-size: 30px;
       font-weight: 600;
       border: none;
       cursor: pointer;
@@ -1232,7 +1236,12 @@
 <div class="screen active" id="screen-login">
   <div class="login-card">
     <div class="login-crest">
-      <span class="login-crest-letter">Đ</span>
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="44" height="44">
+        <path d="M10 13h10c4 0 7 3 7 7s-3 7-7 7H10V13z" fill="none" stroke="#d4a843" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M10 13v14" stroke="#d4a843" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M14 9v4M22 9v4" stroke="#d4a843" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
+        <circle cx="18" cy="8" r="2" fill="#d4a843" opacity="0.8"/>
+      </svg>
     </div>
 
     <h1 class="login-title">Family Memory Hub</h1>
@@ -1283,7 +1292,7 @@
       </div>
       <div>
         <div class="nav-title">Family Memory Hub</div>
-        <div class="nav-tagline">Dòng họ Đinh</div>
+        <div class="nav-tagline">The Đinh</div>
       </div>
     </div>
     <div class="nav-right">
@@ -1311,7 +1320,7 @@
       <div class="timeline-hero">
         <div class="timeline-hero-greeting">Xin chào,</div>
         <div class="timeline-hero-name" id="heroName">Thành viên</div>
-        <div class="timeline-hero-sub">Family Memory Hub · Dòng họ Đinh</div>
+        <div class="timeline-hero-sub">Family Memory Hub · The Đinh</div>
         <div class="timeline-stats">
           <div class="timeline-stat">
             <div class="timeline-stat-num" id="statPhotos">0</div>
@@ -1347,7 +1356,7 @@
     <div class="tab-panel" id="tab-family">
       <div class="family-section-header">
         <div class="section-title">10 Gia đình</div>
-        <div class="section-count">Dòng họ Đinh</div>
+        <div class="section-count">The Đinh</div>
       </div>
       <div class="family-grid" id="familyGrid">
         <!-- Populated by JS -->
