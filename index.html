@@ -1532,6 +1532,91 @@
       margin-left: 5px; vertical-align: middle;
     }
 
+    /* Admin panel */
+    .admin-panel {
+      padding: 16px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .admin-section-hdr {
+      font-family: var(--font-display);
+      font-size: 15px; font-weight: 700;
+      color: var(--ink);
+      margin: 0 0 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .admin-add-box {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .admin-add-box .form-label { margin-bottom: 6px; }
+    .admin-add-row {
+      display: flex; gap: 8px; margin-top: 10px;
+    }
+    .admin-add-row .form-input { flex: 1; }
+    .admin-add-btn {
+      padding: 10px 16px;
+      background: var(--royal);
+      color: #fff;
+      border: none; border-radius: var(--radius-md);
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .admin-add-btn:hover { background: var(--royal-dark, #142d6e); }
+    .admin-wl-list {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .admin-wl-item {
+      display: flex; align-items: center;
+      padding: 11px 14px;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-wl-item:last-child { border-bottom: none; }
+    .admin-wl-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--royal-pale);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      color: var(--royal); flex-shrink: 0;
+    }
+    .admin-wl-info { flex: 1; min-width: 0; }
+    .admin-wl-email {
+      font-size: 13px; font-weight: 600; color: var(--ink);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .admin-wl-meta { font-size: 11px; color: var(--ink-soft); margin-top: 1px; }
+    .admin-wl-del {
+      background: none; border: none;
+      color: var(--ink-soft); cursor: pointer;
+      font-size: 16px; line-height: 1;
+      padding: 4px 6px; border-radius: 4px;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    .admin-wl-del:hover { background: #fee2e2; color: #c0392b; }
+    .admin-wl-empty {
+      padding: 24px; text-align: center;
+      color: var(--ink-soft); font-size: 13px;
+    }
+    .admin-seed-btn {
+      margin-top: 12px;
+      padding: 8px 16px;
+      background: var(--royal-pale);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--royal); font-size: 12px;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .admin-seed-btn:hover { background: #dde6f5; }
+
     /* Submit button */
     .btn-primary {
       width: 100%;
@@ -2147,6 +2232,13 @@
       </svg>
       Đăng ảnh
     </button>
+    <button class="tab-strip-item" id="nav-admin" style="display:none" onclick="switchTab('admin')">
+      <svg class="tab-icon" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.2 4.2l1.4 1.4M14.4 14.4l1.4 1.4M4.2 15.8l1.4-1.4M14.4 5.6l1.4-1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      Admin
+    </button>
   </nav>
 
   <!-- Main Content -->
@@ -2412,6 +2504,39 @@
       </div>
     </div>
 
+    <!-- TAB: ADMIN -->
+    <div class="tab-panel" id="tab-admin">
+      <div class="admin-panel">
+        <div class="admin-section-hdr">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.2 4.2l1.4 1.4M14.4 14.4l1.4 1.4M4.2 15.8l1.4-1.4M14.4 5.6l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Quản lý Whitelist
+        </div>
+
+        <!-- Add email form -->
+        <div class="admin-add-box">
+          <div class="form-label">Thêm thành viên mới</div>
+          <input type="email" class="form-input" id="adminNewEmail"
+                 placeholder="email@gmail.com"
+                 onkeydown="if(event.key==='Enter')addToWhitelist()">
+          <div class="admin-add-row">
+            <input type="text" class="form-input" id="adminNewNote"
+                   placeholder="Ghi chú (tùy chọn, VD: Chị Phượng)"
+                   onkeydown="if(event.key==='Enter')addToWhitelist()">
+            <button class="admin-add-btn" onclick="addToWhitelist()">+ Thêm</button>
+          </div>
+        </div>
+
+        <!-- Whitelist -->
+        <div class="admin-wl-list" id="adminWhitelistList">
+          <div class="admin-wl-empty">Đang tải...</div>
+        </div>
+
+        <button class="admin-seed-btn" onclick="seedWhitelist()" id="adminSeedBtn" style="display:none">
+          ↑ Seed từ config (lần đầu setup)
+        </button>
+      </div>
+    </div>
+
   </div><!-- /main-content -->
 
 
@@ -2525,9 +2650,27 @@ function initFirebase() {
     state.auth = firebase.auth(app);
     state.isConfigured = true;
 
-    state.auth.onAuthStateChanged(user => {
+    state.auth.onAuthStateChanged(async user => {
       if (user) {
-        onLoginSuccess({ name: user.displayName, email: user.email, picture: user.photoURL });
+        const email = user.email;
+        // CONFIG.ALLOWED_EMAILS is always an emergency backdoor
+        const inConfig = CONFIG.ALLOWED_EMAILS.includes('__ALLOW_ALL__') ||
+                         CONFIG.ALLOWED_EMAILS.includes(email);
+        if (!inConfig) {
+          try {
+            const snap = await state.db.collection('whitelist')
+              .where('email', '==', email).limit(1).get();
+            if (snap.empty) {
+              await state.auth.signOut();
+              hideLoading();
+              showToast('Tài khoản chưa được cấp quyền, liên hệ admin', 'error');
+              return;
+            }
+          } catch(e) {
+            console.warn('Whitelist check error — allowing anyway:', e);
+          }
+        }
+        onLoginSuccess({ name: user.displayName, email, picture: user.photoURL });
       } else {
         onGuestMode();
       }
@@ -2554,49 +2697,34 @@ window.onload = function() {
   }
 };
 
-function handleCredentialResponse(response) {
+async function handleCredentialResponse(response) {
   showLoading('Đang xác thực...');
   try {
     const payload = JSON.parse(atob(response.credential.split('.')[1]));
-    const email   = payload.email;
 
-    // Check whitelist
-    const allowed = CONFIG.ALLOWED_EMAILS.includes('__ALLOW_ALL__') ||
-                    CONFIG.ALLOWED_EMAILS.includes(email);
-    if (!allowed) {
-      hideLoading();
-      if (state.auth) state.auth.signOut();
-      showToast('Tài khoản chưa được cấp quyền, liên hệ admin', 'error');
-      return;
-    }
-
-    // If Firebase configured, sign in properly
     if (state.isConfigured && state.auth) {
+      // Firebase mode — whitelist check happens inside onAuthStateChanged
       const credential = firebase.auth.GoogleAuthProvider.credential(response.credential);
-      state.auth.signInWithCredential(credential)
-        .then(result => {
-          onLoginSuccess({
-            name:    result.user.displayName,
-            email:   result.user.email,
-            picture: result.user.photoURL
-          });
-        })
-        .catch(err => {
-          hideLoading();
-          console.error('Firebase signIn error:', err.code, err.message);
-          if (err.code === 'auth/unauthorized-domain') {
-            showToast('Domain chưa được cấp phép — thêm vào Firebase Console > Auth > Authorized domains', 'error');
-          } else {
-            showToast('Lỗi xác thực Firebase: ' + (err.code || err.message), 'error');
-          }
-          // Do NOT fall through: without Firebase Auth, Firestore writes will fail.
-        });
+      await state.auth.signInWithCredential(credential);
+      // onAuthStateChanged will call onLoginSuccess or reject & sign out
     } else {
+      // Demo mode — check hardcoded list only
+      const allowed = CONFIG.ALLOWED_EMAILS.includes('__ALLOW_ALL__') ||
+                      CONFIG.ALLOWED_EMAILS.includes(payload.email);
+      if (!allowed) {
+        hideLoading();
+        showToast('Tài khoản chưa được cấp quyền, liên hệ admin', 'error');
+        return;
+      }
       onLoginSuccess({ name: payload.name, email: payload.email, picture: payload.picture });
     }
   } catch(e) {
     hideLoading();
-    showToast('Đăng nhập thất bại', 'error');
+    if (e.code === 'auth/unauthorized-domain') {
+      showToast('Domain chưa được cấp phép — thêm vào Firebase Console > Auth > Authorized domains', 'error');
+    } else {
+      showToast('Đăng nhập thất bại: ' + (e.message || ''), 'error');
+    }
   }
 }
 
@@ -2620,6 +2748,11 @@ function onLoginSuccess(user) {
   document.getElementById('ddName').textContent   = user.name || '';
   document.getElementById('ddEmail').textContent  = user.email || '';
 
+  // Admin tab
+  const adminTab = document.getElementById('nav-admin');
+  if (adminTab) adminTab.style.display = user.email === 'dinhvanquochung@gmail.com' ? '' : 'none';
+  if (user.email === 'dinhvanquochung@gmail.com') initAdminPanel();
+
   loadMemories();
   showToast(`Chào mừng, ${firstName}! 👋`, 'success');
 }
@@ -2632,6 +2765,9 @@ function onGuestMode() {
   if (loginBtn)  loginBtn.style.display  = '';
   if (userMenu)  userMenu.style.display  = 'none';
   if (logoutBtn) logoutBtn.style.display = 'none';
+  const adminTab = document.getElementById('nav-admin');
+  if (adminTab) adminTab.style.display = 'none';
+  teardownAdminPanel();
   loadMemories();
 }
 
@@ -2644,7 +2780,104 @@ function openUploadTab() {
   switchTab('upload');
 }
 
+/* ═══════════════════════════════════════
+   ADMIN PANEL
+═══════════════════════════════════════ */
+let _adminWLUnsub = null;
+
+function initAdminPanel() {
+  if (!state.db || _adminWLUnsub) return;
+  _adminWLUnsub = state.db.collection('whitelist')
+    .orderBy('addedAt', 'desc')
+    .onSnapshot(snap => {
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderAdminWhitelist(items);
+      const seedBtn = document.getElementById('adminSeedBtn');
+      if (seedBtn) seedBtn.style.display = items.length === 0 ? '' : 'none';
+    }, err => console.error('whitelist listener:', err));
+}
+
+function teardownAdminPanel() {
+  if (_adminWLUnsub) { _adminWLUnsub(); _adminWLUnsub = null; }
+}
+
+function renderAdminWhitelist(items) {
+  const list = document.getElementById('adminWhitelistList');
+  if (!list) return;
+  if (!items.length) {
+    list.innerHTML = '<div class="admin-wl-empty">Chưa có email nào — nhấn "Seed từ config" để import lần đầu</div>';
+    return;
+  }
+  list.innerHTML = items.map(item => {
+    const initial = (item.email || '?')[0].toUpperCase();
+    const note    = item.note ? `<div class="admin-wl-meta">${escapeHtml(item.note)}</div>` : '';
+    const addedBy = item.addedBy ? `<div class="admin-wl-meta">Thêm bởi ${escapeHtml(item.addedBy)}</div>` : '';
+    return `
+      <div class="admin-wl-item">
+        <div class="admin-wl-avatar">${initial}</div>
+        <div class="admin-wl-info">
+          <div class="admin-wl-email">${escapeHtml(item.email)}</div>
+          ${note}${addedBy}
+        </div>
+        <button class="admin-wl-del" onclick="removeFromWhitelist('${item.id}','${escapeHtml(item.email)}')" title="Xóa">✕</button>
+      </div>`;
+  }).join('');
+}
+
+async function addToWhitelist() {
+  const emailEl = document.getElementById('adminNewEmail');
+  const noteEl  = document.getElementById('adminNewNote');
+  if (!emailEl) return;
+  const email = emailEl.value.trim().toLowerCase();
+  if (!email || !email.includes('@')) { showToast('Email không hợp lệ', 'error'); return; }
+  if (!state.db || !state.auth?.currentUser) { showToast('Chưa đăng nhập', 'error'); return; }
+  try {
+    await state.auth.currentUser.getIdToken(true);
+    await state.db.collection('whitelist').add({
+      email,
+      note:    noteEl?.value.trim() || '',
+      addedBy: state.user.email,
+      addedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    emailEl.value = '';
+    if (noteEl) noteEl.value = '';
+    showToast(`Đã thêm ${email}`, 'success');
+  } catch(e) { showErrorDialog(e); }
+}
+
+async function removeFromWhitelist(docId, email) {
+  if (!confirm(`Xóa "${email}" khỏi whitelist?`)) return;
+  if (!state.db || !state.auth?.currentUser) return;
+  try {
+    await state.auth.currentUser.getIdToken(true);
+    await state.db.collection('whitelist').doc(docId).delete();
+    showToast(`Đã xóa ${email}`);
+  } catch(e) { showErrorDialog(e); }
+}
+
+async function seedWhitelist() {
+  if (!state.db || !state.auth?.currentUser) return;
+  const emails = CONFIG.ALLOWED_EMAILS.filter(e => e !== '__ALLOW_ALL__');
+  if (!emails.length) { showToast('CONFIG.ALLOWED_EMAILS trống', 'error'); return; }
+  try {
+    await state.auth.currentUser.getIdToken(true);
+    const batch = state.db.batch();
+    emails.forEach(email => {
+      const ref = state.db.collection('whitelist').doc();
+      batch.set(ref, {
+        email,
+        note:    email === 'dinhvanquochung@gmail.com' ? 'Admin' : '',
+        addedBy: state.user.email,
+        addedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+    await batch.commit();
+    showToast(`Đã seed ${emails.length} email`, 'success');
+  } catch(e) { showErrorDialog(e); }
+}
+
 function logout() {
+  teardownAdminPanel();
   if (state.auth) state.auth.signOut();
   state.memories = [];
   closeUserMenu();
