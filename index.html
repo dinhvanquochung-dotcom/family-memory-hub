@@ -1411,6 +1411,24 @@
       box-shadow: 0 0 0 3px rgba(36,81,168,0.08);
     }
 
+    .date-mode-toggle {
+      display: flex; gap: 6px; margin-bottom: 8px;
+    }
+    .date-mode-btn {
+      flex: 1; padding: 7px 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      color: var(--ink-soft);
+      font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .date-mode-btn.active {
+      background: var(--royal);
+      border-color: var(--royal);
+      color: #fff;
+    }
+
     select.form-input {
       appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%237a89a8' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
@@ -2258,7 +2276,14 @@
         <!-- Date -->
         <div class="form-field">
           <label class="form-label">Ngày chụp / xảy ra</label>
+          <div class="date-mode-toggle">
+            <button type="button" class="date-mode-btn active" id="dateModeCalBtn" onclick="setDateMode('cal')">📅 Chọn ngày</button>
+            <button type="button" class="date-mode-btn" id="dateModeTextBtn" onclick="setDateMode('text')">✏️ Gõ tự do</button>
+          </div>
           <input type="date" class="form-input" id="memoryDate">
+          <input type="text" class="form-input" id="memoryDateText"
+                 placeholder="VD: Tết 1995, Khoảng 1980-1985, Hè năm lớp 5..."
+                 style="display:none">
         </div>
 
         <!-- Batch upload progress -->
@@ -2351,6 +2376,7 @@ let state = {
   memories: [],
   selectedFiles: [],
   selectedEvent: null,
+  dateMode: 'cal',
   isConfigured: false
 };
 
@@ -2660,7 +2686,7 @@ function renderMemories(memories) {
 
 function renderMemoryCard(m) {
   const fam   = FAMILIES.find(f => f.id === m.familyId) || { name: 'Dòng họ Đinh', initial: 'Đ', color: '#1a3a7c' };
-  const date  = m._date ? m._date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+  const date  = m.memoryDateText || (m._date ? m._date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '');
   const event = m.eventTag ? EVENT_LABELS[m.eventTag] || m.eventTag : '';
 
   const images = m.imageUrls || (m.imageUrl ? [m.imageUrl] : []);
@@ -2966,9 +2992,9 @@ function _lfaRenderMosaic(mems) {
   }
   grid.innerHTML = pool.map(m => {
     const img  = (m.imageUrls || [m.imageUrl])[0];
-    const date = m.memoryDate
+    const date = m.memoryDateText || (m.memoryDate
       ? new Date(m.memoryDate).toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' })
-      : '';
+      : '');
     const fn = m.id ? `openLightboxById('${m.id}',0)` : '';
     return `<div class="lfa-tile" onclick="${fn}">
       <img src="${img}" alt="" loading="lazy" onerror="this.closest('.lfa-tile').style.display='none'">
@@ -3041,6 +3067,23 @@ function setDefaultDate() {
   if (d) d.value = new Date().toISOString().split('T')[0];
 }
 
+function setDateMode(mode) {
+  state.dateMode = mode;
+  const calBtn   = document.getElementById('dateModeCalBtn');
+  const textBtn  = document.getElementById('dateModeTextBtn');
+  const calInput = document.getElementById('memoryDate');
+  const txtInput = document.getElementById('memoryDateText');
+  if (!calBtn) return;
+  if (mode === 'cal') {
+    calBtn.classList.add('active');   textBtn.classList.remove('active');
+    calInput.style.display = '';      txtInput.style.display = 'none';
+  } else {
+    textBtn.classList.add('active');  calBtn.classList.remove('active');
+    calInput.style.display = 'none';  txtInput.style.display = '';
+    txtInput.focus();
+  }
+}
+
 function handleFileSelect(event) {
   const files = Array.from(event.target.files);
   if (!files.length) return;
@@ -3092,7 +3135,8 @@ async function submitMemory() {
   const caption  = document.getElementById('caption').value.trim();
   const familyId = document.getElementById('familySelect').value;
   const videoUrl = document.getElementById('videoUrl').value.trim();
-  const date     = document.getElementById('memoryDate').value;
+  const date         = state.dateMode === 'cal' ? document.getElementById('memoryDate').value : null;
+  const memoryDateText = state.dateMode === 'text' ? document.getElementById('memoryDateText').value.trim() : null;
 
   if (!familyId) { showToast('Vui lòng chọn gia đình', 'error'); return; }
   if (!state.selectedFiles.length && !videoUrl && !caption) {
@@ -3164,7 +3208,8 @@ async function submitMemory() {
       caption,
       familyId,
       eventTag:   state.selectedEvent || null,
-      memoryDate: date || new Date().toISOString().split('T')[0],
+      memoryDate:     date || null,
+      memoryDateText: memoryDateText || null,
       imageUrls:  imageUrls.length ? imageUrls : null,
       imageUrl:   imageUrls[0] || null,
       videoUrl:   videoUrl || null,
@@ -3180,6 +3225,10 @@ async function submitMemory() {
     document.querySelectorAll('.event-tag').forEach(t => t.classList.remove('selected'));
     state.selectedFiles = [];
     state.selectedEvent = null;
+    setDateMode('cal');
+    setDefaultDate();
+    const dtxt = document.getElementById('memoryDateText');
+    if (dtxt) dtxt.value = '';
     document.getElementById('uploadPreviews').style.display      = 'none';
     document.getElementById('uploadPreviews').innerHTML          = '';
     document.getElementById('uploadProgressList').style.display  = 'none';
