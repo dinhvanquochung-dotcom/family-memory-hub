@@ -950,155 +950,237 @@
     }
 
     /* ═══════════════════════════════════════
-       HOME TAB
+       HOME TAB — Living Family Album
     ═══════════════════════════════════════ */
-    .home-hero {
-      background: linear-gradient(135deg, var(--royal) 0%, var(--royal-mid) 100%);
-      padding: 28px 20px 22px;
-      color: var(--white);
+
+    /* 1. Hero */
+    .lfa-hero {
       position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      min-height: 200px;
+      max-height: 300px;
       overflow: hidden;
+      background: var(--royal);
+      cursor: pointer;
     }
-    .home-hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 80% 20%, rgba(184,134,46,0.18) 0%, transparent 60%);
+    .lfa-hero-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s;
+    }
+    .lfa-hero:hover .lfa-hero-img { transform: scale(1.03); }
+    .lfa-hero-gradient {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 25%, rgba(8,18,46,0.65) 65%, rgba(8,18,46,0.9) 100%);
       pointer-events: none;
     }
-    .home-hero-greeting {
-      font-size: 12px;
-      color: rgba(255,255,255,0.6);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-weight: 500;
+    .lfa-hero-placeholder {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+      background: linear-gradient(135deg, var(--royal) 0%, var(--royal-mid) 100%);
     }
-    .home-hero-name {
+    .lfa-hero-info {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 14px 16px 16px;
+    }
+    .lfa-hero-event {
+      display: inline-block;
+      background: rgba(184,134,46,0.88);
+      color: #fff;
+      font-size: 10px; font-weight: 600;
+      padding: 2px 9px; border-radius: 10px;
+      margin-bottom: 6px; letter-spacing: 0.04em;
+    }
+    .lfa-hero-caption {
       font-family: var(--font-display);
-      font-size: 26px;
-      font-weight: 700;
-      margin: 2px 0 4px;
-      line-height: 1.2;
+      font-size: 16px; font-weight: 700;
+      color: #fff; line-height: 1.35;
+      margin-bottom: 5px;
+      overflow: hidden; display: -webkit-box;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.4);
     }
-    .home-hero-sub {
-      font-size: 12px;
-      color: rgba(255,255,255,0.5);
-      font-style: italic;
-      font-family: var(--font-display);
+    .lfa-hero-meta {
+      font-size: 11px; color: rgba(255,255,255,0.72);
+      display: flex; align-items: center; gap: 6px;
     }
-    .home-stats-row {
-      display: flex;
-      gap: 8px;
-      padding: 16px;
+    .lfa-hero-dot { color: var(--gold-bright); }
+    .lfa-hero-badge {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(0,0,0,0.45); backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.85);
+      font-size: 10px; padding: 3px 8px; border-radius: 10px;
     }
-    .home-stat-card {
-      flex: 1;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 14px 8px;
+
+    /* 2. Stats bar */
+    .lfa-stats {
+      background: var(--royal);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 2px solid var(--gold);
+    }
+    .lfa-stat {
       text-align: center;
-      box-shadow: var(--shadow-sm);
+      padding: 11px 4px;
+      position: relative;
     }
-    .home-stat-num {
-      font-family: var(--font-display);
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--royal);
-      line-height: 1;
-    }
-    .home-stat-label {
-      font-size: 10px;
-      color: var(--ink-soft);
-      margin-top: 4px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .home-section {
-      padding: 0 16px 20px;
-    }
-    .home-section-title {
-      font-family: var(--font-display);
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--ink);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .home-section-title::after {
+    .lfa-stat:not(:last-child)::after {
       content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border-gold);
+      position: absolute; right: 0; top: 22%; height: 56%;
+      width: 1px; background: rgba(255,255,255,0.14);
     }
-    .home-photos-grid {
+    .lfa-stat-num {
+      font-family: var(--font-display);
+      font-size: 20px; font-weight: 700;
+      color: var(--gold-bright); line-height: 1;
+    }
+    .lfa-stat-label {
+      font-size: 9px; color: rgba(255,255,255,0.5);
+      margin-top: 3px; text-transform: uppercase;
+      letter-spacing: 0.06em; font-weight: 500;
+      line-height: 1.3;
+    }
+
+    /* 3. On-this-day */
+    .lfa-today {
+      margin: 12px 16px 4px;
+      background: linear-gradient(135deg, var(--gold-pale), var(--white));
+      border: 1px solid rgba(184,134,46,0.35);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: none;
+    }
+    .lfa-today.show { display: block; }
+    .lfa-today-hdr {
+      display: flex; align-items: center; gap: 7px;
+      padding: 9px 14px 7px;
+      border-bottom: 1px solid rgba(184,134,46,0.18);
+    }
+    .lfa-today-lbl {
+      font-family: var(--font-display);
+      font-size: 13px; font-weight: 600; color: var(--gold);
+    }
+    .lfa-today-body {
+      display: flex; gap: 12px;
+      padding: 10px 14px 12px;
+      cursor: pointer;
+    }
+    .lfa-today-thumb {
+      width: 70px; height: 70px;
+      border-radius: var(--radius-sm);
+      object-fit: cover; flex-shrink: 0;
+      background: var(--royal-pale);
+    }
+    .lfa-today-text { flex: 1; min-width: 0; }
+    .lfa-today-cap {
+      font-size: 13px; color: var(--ink); line-height: 1.45;
+      overflow: hidden; display: -webkit-box;
+      -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+      margin-bottom: 5px;
+    }
+    .lfa-today-meta { font-size: 11px; color: var(--ink-soft); }
+
+    /* 4. Mosaic */
+    .lfa-sec-hdr {
+      padding: 14px 16px 8px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .lfa-sec-title {
+      font-family: var(--font-display);
+      font-size: 15px; font-weight: 600; color: var(--ink);
+    }
+    .lfa-sec-more {
+      font-size: 12px; color: var(--royal-mid);
+      cursor: pointer; font-weight: 500;
+      transition: color 0.15s;
+    }
+    .lfa-sec-more:hover { color: var(--royal); }
+    .lfa-mosaic {
+      padding: 0 16px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: 90px;
+      grid-auto-flow: row dense;
       gap: 4px;
-      border-radius: var(--radius-sm);
-      overflow: hidden;
     }
-    .home-photo-item {
-      aspect-ratio: 1;
+    .lfa-tile {
+      position: relative; overflow: hidden;
+      border-radius: 4px;
       background: var(--royal-pale);
-      overflow: hidden;
       cursor: pointer;
     }
-    .home-photo-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s;
-      display: block;
+    .lfa-tile.big { grid-column: span 2; grid-row: span 2; }
+    .lfa-tile img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.35s;
     }
-    .home-photo-item:hover img { transform: scale(1.06); }
-    .home-events-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .lfa-tile:hover img { transform: scale(1.07); }
+    .lfa-tile-ov {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(8,18,46,0.82) 0%, transparent 55%);
+      opacity: 0; transition: opacity 0.25s;
+      display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 8px;
     }
-    .home-event-item {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--gold);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      cursor: pointer;
+    .lfa-tile:hover .lfa-tile-ov,
+    .lfa-tile.big .lfa-tile-ov { opacity: 1; }
+    .lfa-tile-name {
+      font-size: 11px; font-weight: 600; color: #fff;
+      line-height: 1.3;
+      overflow: hidden; display: -webkit-box;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    }
+    .lfa-tile-sub { font-size: 10px; color: rgba(255,255,255,0.68); margin-top: 2px; }
+    .lfa-mosaic-empty {
+      grid-column: 1 / -1; text-align: center; padding: 36px 0;
+      font-style: italic; color: var(--ink-soft);
+      font-family: var(--font-display); font-size: 13px;
+    }
+
+    /* 5. Horizontal timeline */
+    .lfa-htl {
+      overflow-x: auto; padding: 0 16px 24px;
+      display: flex; gap: 10px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .lfa-htl::-webkit-scrollbar { display: none; }
+    .lfa-htl-month {
+      flex-shrink: 0; width: 96px; cursor: pointer;
+    }
+    .lfa-htl-thumbs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 2px; width: 96px; height: 96px;
+      border-radius: var(--radius-sm); overflow: hidden;
+      margin-bottom: 6px;
       transition: box-shadow 0.2s;
-      box-shadow: var(--shadow-sm);
     }
-    .home-event-item:hover { box-shadow: var(--shadow-md); }
-    .home-event-tag {
-      font-size: 11px;
-      color: var(--gold);
-      font-weight: 600;
-      margin-bottom: 3px;
+    .lfa-htl-month:hover .lfa-htl-thumbs { box-shadow: var(--shadow-md); }
+    .lfa-htl-thumb {
+      background: var(--royal-pale); overflow: hidden;
     }
-    .home-event-caption {
-      font-size: 13px;
-      color: var(--ink);
-      line-height: 1.4;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
+    .lfa-htl-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .lfa-htl-lbl {
+      font-size: 11px; font-weight: 600; color: var(--ink-mid);
+      text-align: center; transition: color 0.15s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .home-event-meta {
-      font-size: 11px;
-      color: var(--ink-soft);
-      margin-top: 4px;
+    .lfa-htl-month:hover .lfa-htl-lbl { color: var(--royal); }
+    .lfa-htl-cnt {
+      font-size: 10px; color: var(--ink-soft); text-align: center;
     }
-    .home-empty-msg {
-      text-align: center;
-      padding: 24px 0;
-      color: var(--ink-soft);
-      font-size: 13px;
-      font-style: italic;
-      font-family: var(--font-display);
+    .lfa-htl-empty {
+      font-style: italic; color: var(--ink-soft);
+      font-family: var(--font-display); font-size: 13px; padding: 8px 0;
     }
+
     .nav-brand { cursor: pointer; }
 
     /* ═══════════════════════════════════════
@@ -1790,37 +1872,56 @@
 
     <!-- TAB: HOME -->
     <div class="tab-panel active" id="tab-home">
-      <div class="home-hero">
-        <div class="home-hero-greeting">Chào mừng,</div>
-        <div class="home-hero-name" id="homeHeroName">Thành viên</div>
-        <div class="home-hero-sub">Family Memory Hub · The Đinh</div>
-      </div>
-      <div class="home-stats-row">
-        <div class="home-stat-card">
-          <div class="home-stat-num" id="homeStatMemories">0</div>
-          <div class="home-stat-label">Kỷ niệm</div>
+
+      <!-- 1. Hero — latest memory full-width -->
+      <div class="lfa-hero" id="lfaHero" onclick="lfaHeroClick()"></div>
+
+      <!-- 2. Stats bar -->
+      <div class="lfa-stats">
+        <div class="lfa-stat">
+          <div class="lfa-stat-num" id="lfaStatMem">0</div>
+          <div class="lfa-stat-label">Kỷ niệm</div>
         </div>
-        <div class="home-stat-card">
-          <div class="home-stat-num">10</div>
-          <div class="home-stat-label">Gia đình</div>
+        <div class="lfa-stat">
+          <div class="lfa-stat-num" id="lfaStatPhotos">0</div>
+          <div class="lfa-stat-label">Ảnh</div>
         </div>
-        <div class="home-stat-card">
-          <div class="home-stat-num">20+</div>
-          <div class="home-stat-label">Thành viên</div>
+        <div class="lfa-stat">
+          <div class="lfa-stat-num">10</div>
+          <div class="lfa-stat-label">Gia đình</div>
         </div>
-      </div>
-      <div class="home-section">
-        <div class="home-section-title">Ảnh gần nhất</div>
-        <div class="home-photos-grid" id="homePhotosGrid">
-          <div class="home-empty-msg" style="grid-column:1/-1">Chưa có ảnh nào</div>
+        <div class="lfa-stat">
+          <div class="lfa-stat-num" id="lfaStatEvent">—</div>
+          <div class="lfa-stat-label">Sự kiện gần nhất</div>
         </div>
       </div>
-      <div class="home-section">
-        <div class="home-section-title">Sự kiện nổi bật</div>
-        <div class="home-events-list" id="homeEventsList">
-          <div class="home-empty-msg">Chưa có sự kiện nào</div>
+
+      <!-- 3. On-this-day -->
+      <div class="lfa-today" id="lfaToday">
+        <div class="lfa-today-hdr">
+          <span>📅</span>
+          <div class="lfa-today-lbl" id="lfaTodayLbl">Một năm trước...</div>
         </div>
+        <div class="lfa-today-body" id="lfaTodayBody"></div>
       </div>
+
+      <!-- 4. Mosaic grid -->
+      <div class="lfa-sec-hdr">
+        <div class="lfa-sec-title">Kỷ niệm gần nhất</div>
+        <div class="lfa-sec-more" onclick="switchTab('timeline')">Xem tất cả →</div>
+      </div>
+      <div class="lfa-mosaic" id="lfaMosaic">
+        <div class="lfa-mosaic-empty">Chưa có kỷ niệm nào</div>
+      </div>
+
+      <!-- 5. Horizontal timeline -->
+      <div class="lfa-sec-hdr" style="padding-top:18px;">
+        <div class="lfa-sec-title">Theo tháng</div>
+      </div>
+      <div class="lfa-htl" id="lfaHtl">
+        <div class="lfa-htl-empty">Chưa có dữ liệu</div>
+      </div>
+
     </div>
 
     <!-- TAB: TIMELINE -->
@@ -2233,8 +2334,6 @@ function onLoginSuccess(user) {
 
   const firstName = user.name?.split(' ').pop() || 'Thành viên';
   document.getElementById('heroName').textContent      = firstName;
-  const homeNameEl = document.getElementById('homeHeroName');
-  if (homeNameEl) homeNameEl.textContent = firstName;
   document.getElementById('ddName').textContent    = user.name || '';
   document.getElementById('ddEmail').textContent   = user.email || '';
 
@@ -2609,56 +2708,186 @@ function updateFamilyCounts() {
   });
 }
 
+/* ── Living Family Album helpers ── */
+
+let _lfaHeroId = null;
+
 function renderHome() {
-  if (state.user) {
-    const nameEl = document.getElementById('homeHeroName');
-    if (nameEl) nameEl.textContent = state.user.name?.split(' ').pop() || 'Thành viên';
+  const mems = state.memories;
+  _lfaRenderHero(mems);
+  _lfaRenderStats(mems);
+  _lfaRenderToday(mems);
+  _lfaRenderMosaic(mems);
+  _lfaRenderHtl(mems);
+}
+
+function _lfaRenderHero(mems) {
+  const hero = document.getElementById('lfaHero');
+  if (!hero) return;
+  const m = mems.find(m => (m.imageUrls?.length || m.imageUrl));
+  if (!m) {
+    _lfaHeroId = null;
+    hero.innerHTML = `<div class="lfa-hero-placeholder">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <rect x="2" y="8" width="36" height="24" rx="3" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <circle cx="13" cy="18" r="4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <path d="M2 28l9-7 6 6 5-5 16 8" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div style="font-family:var(--font-display);font-size:14px;color:rgba(255,255,255,0.4);font-style:italic;">Chưa có ảnh nào</div>
+    </div>`;
+    return;
   }
+  _lfaHeroId = m.id;
+  const img1 = (m.imageUrls || [m.imageUrl])[0];
+  const fam  = FAMILIES.find(f => f.id === m.familyId) || { name: 'Dòng họ Đinh' };
+  const date = m.memoryDate
+    ? new Date(m.memoryDate).toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' })
+    : '';
+  const tag  = m.eventTag ? (EVENT_LABELS[m.eventTag] || m.eventTag) : '';
+  const imgCount = (m.imageUrls?.length || (m.imageUrl ? 1 : 0));
 
-  const countEl = document.getElementById('homeStatMemories');
-  if (countEl) countEl.textContent = state.memories.length;
+  hero.innerHTML = `
+    <img class="lfa-hero-img" src="${img1}" alt="" loading="eager"
+         onerror="this.style.display='none'">
+    <div class="lfa-hero-gradient"></div>
+    ${imgCount > 1 ? `<div class="lfa-hero-badge">+${imgCount - 1} ảnh</div>` : ''}
+    <div class="lfa-hero-info">
+      ${tag ? `<div class="lfa-hero-event">${tag}</div>` : ''}
+      ${m.caption ? `<div class="lfa-hero-caption">${escapeHtml(m.caption)}</div>` : ''}
+      <div class="lfa-hero-meta">
+        <span>Gia đình ${escapeHtml(fam.name)}</span>
+        ${date ? `<span class="lfa-hero-dot">·</span><span>${date}</span>` : ''}
+      </div>
+    </div>`;
+}
 
-  // Recent 6 photos
-  const withPhotos = state.memories.filter(m => {
-    const imgs = m.imageUrls || (m.imageUrl ? [m.imageUrl] : []);
-    return imgs.length > 0;
+function lfaHeroClick() {
+  if (_lfaHeroId && memoryImageMap[_lfaHeroId]) openLightboxById(_lfaHeroId, 0);
+}
+
+function _lfaRenderStats(mems) {
+  const memEl    = document.getElementById('lfaStatMem');
+  const photosEl = document.getElementById('lfaStatPhotos');
+  const evEl     = document.getElementById('lfaStatEvent');
+  if (memEl)    memEl.textContent = mems.length;
+  if (photosEl) {
+    photosEl.textContent = mems.reduce((n, m) => n + (m.imageUrls?.length || (m.imageUrl ? 1 : 0)), 0);
+  }
+  if (evEl) {
+    const ev = mems.find(m => m.eventTag && m.eventTag !== 'thuong_ngay');
+    if (ev) {
+      const raw = EVENT_LABELS[ev.eventTag] || ev.eventTag;
+      const emoji = raw.match(/^\S+/)?.[0] || raw;
+      evEl.textContent = emoji;
+      evEl.style.fontSize = '20px';
+    } else {
+      evEl.textContent = '—';
+      evEl.style.fontSize = '20px';
+    }
+  }
+}
+
+function _lfaRenderToday(mems) {
+  const sec = document.getElementById('lfaToday');
+  if (!sec) return;
+  const now = new Date();
+  const mm = now.getMonth(), dd = now.getDate();
+  const hit = mems.find(m => {
+    if (!m.memoryDate) return false;
+    const d = new Date(m.memoryDate);
+    return d.getMonth() === mm && d.getDate() === dd && d.getFullYear() < now.getFullYear();
   });
-  const grid = document.getElementById('homePhotosGrid');
-  if (grid) {
-    if (withPhotos.length) {
-      grid.innerHTML = withPhotos.slice(0, 6).map(m => {
-        const img = (m.imageUrls || [m.imageUrl])[0];
-        return `<div class="home-photo-item" onclick="openLightbox('${m.id}',0)">
-          <img src="${img}" alt="" loading="lazy" onerror="this.closest('.home-photo-item').style.display='none'">
-        </div>`;
-      }).join('');
-    } else {
-      grid.innerHTML = '<div class="home-empty-msg" style="grid-column:1/-1">Chưa có ảnh nào</div>';
-    }
-  }
+  if (!hit) { sec.classList.remove('show'); return; }
+  sec.classList.add('show');
 
-  // Featured events (non-routine, latest 4)
-  const featured = state.memories
-    .filter(m => m.eventTag && m.eventTag !== 'thuong_ngay')
-    .slice(0, 4);
-  const evList = document.getElementById('homeEventsList');
-  if (evList) {
-    if (featured.length) {
-      evList.innerHTML = featured.map(m => {
-        const fam  = FAMILIES.find(f => f.id === m.familyId) || { name: 'Dòng họ Đinh' };
-        const date = m.memoryDate
-          ? new Date(m.memoryDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
-          : '';
-        const tag = EVENT_LABELS[m.eventTag] || m.eventTag;
-        return `<div class="home-event-item" onclick="switchTab('timeline')">
-          <div class="home-event-tag">${tag}</div>
-          <div class="home-event-caption">${m.caption || '(Chưa có mô tả)'}</div>
-          <div class="home-event-meta">${fam.name}${date ? ' · ' + date : ''}</div>
-        </div>`;
-      }).join('');
-    } else {
-      evList.innerHTML = '<div class="home-empty-msg">Chưa có sự kiện nào</div>';
-    }
+  const yrsAgo = now.getFullYear() - new Date(hit.memoryDate).getFullYear();
+  const lbl = document.getElementById('lfaTodayLbl');
+  if (lbl) lbl.textContent = yrsAgo === 1 ? 'Một năm trước...' : `${yrsAgo} năm trước...`;
+
+  const body = document.getElementById('lfaTodayBody');
+  if (!body) return;
+  const imgs = hit.imageUrls || (hit.imageUrl ? [hit.imageUrl] : []);
+  const fam  = FAMILIES.find(f => f.id === hit.familyId) || { name: 'Dòng họ Đinh' };
+  const dateStr = new Date(hit.memoryDate).toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' });
+  body.onclick = () => imgs.length && hit.id && openLightboxById(hit.id, 0);
+  body.innerHTML = `
+    ${imgs.length ? `<img class="lfa-today-thumb" src="${imgs[0]}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+    <div class="lfa-today-text">
+      <div class="lfa-today-cap">${escapeHtml(hit.caption || '(Kỷ niệm không có mô tả)')}</div>
+      <div class="lfa-today-meta">Gia đình ${escapeHtml(fam.name)} · ${dateStr}</div>
+    </div>`;
+}
+
+function _lfaRenderMosaic(mems) {
+  const grid = document.getElementById('lfaMosaic');
+  if (!grid) return;
+  const pool = mems.filter(m => m.imageUrls?.length || m.imageUrl).slice(0, 12);
+  if (!pool.length) {
+    grid.innerHTML = '<div class="lfa-mosaic-empty">Chưa có kỷ niệm nào</div>';
+    return;
+  }
+  grid.innerHTML = pool.map((m, i) => {
+    const img  = (m.imageUrls || [m.imageUrl])[0];
+    const fam  = FAMILIES.find(f => f.id === m.familyId) || { name: 'Dòng họ Đinh' };
+    const date = m.memoryDate
+      ? new Date(m.memoryDate).toLocaleDateString('vi-VN', { month:'2-digit', year:'numeric' })
+      : '';
+    const big  = i === 0 ? ' big' : '';
+    const fn   = m.id ? `openLightboxById('${m.id}',0)` : '';
+    return `<div class="lfa-tile${big}" onclick="${fn}">
+      <img src="${img}" alt="" loading="lazy" onerror="this.closest('.lfa-tile').style.display='none'">
+      <div class="lfa-tile-ov">
+        <div class="lfa-tile-name">${escapeHtml(m.caption || 'Kỷ niệm')}</div>
+        <div class="lfa-tile-sub">GĐ ${escapeHtml(fam.name)}${date ? ' · ' + date : ''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function _lfaRenderHtl(mems) {
+  const htl = document.getElementById('lfaHtl');
+  if (!htl) return;
+  const grouped = {};
+  mems.forEach(m => {
+    const raw = m.memoryDate || (m.createdAt ? new Date(m.createdAt.seconds * 1000).toISOString().split('T')[0] : null);
+    if (!raw) return;
+    const d = new Date(raw);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    if (!grouped[key]) grouped[key] = { key, mems: [], label: d.toLocaleDateString('vi-VN', { month: 'short', year: 'numeric' }) };
+    grouped[key].mems.push(m);
+  });
+  const months = Object.values(grouped).sort((a, b) => b.key.localeCompare(a.key));
+  if (!months.length) {
+    htl.innerHTML = '<div class="lfa-htl-empty">Chưa có dữ liệu</div>';
+    return;
+  }
+  htl.innerHTML = months.map(({ key, label, mems: gm }) => {
+    const srcs = gm.flatMap(m => m.imageUrls || (m.imageUrl ? [m.imageUrl] : [])).slice(0, 4);
+    while (srcs.length < 4) srcs.push(null);
+    const thumbs = srcs.map(s => s
+      ? `<div class="lfa-htl-thumb"><img src="${s}" alt="" loading="lazy"></div>`
+      : `<div class="lfa-htl-thumb"></div>`
+    ).join('');
+    return `<div class="lfa-htl-month" onclick="lfaJumpMonth('${key}')">
+      <div class="lfa-htl-thumbs">${thumbs}</div>
+      <div class="lfa-htl-lbl">${label}</div>
+      <div class="lfa-htl-cnt">${gm.length} kỷ niệm</div>
+    </div>`;
+  }).join('');
+}
+
+function lfaJumpMonth(key) {
+  const [yr, mo] = key.split('-').map(Number);
+  const filtered = state.memories.filter(m => {
+    const raw = m.memoryDate || (m.createdAt ? new Date(m.createdAt.seconds * 1000).toISOString().split('T')[0] : null);
+    if (!raw) return false;
+    const d = new Date(raw);
+    return d.getFullYear() === yr && d.getMonth() + 1 === mo;
+  });
+  switchTab('timeline');
+  renderMemories(filtered.length ? filtered : state.memories);
+  if (filtered.length) {
+    showToast(`Tháng ${mo}/${yr} · ${filtered.length} kỷ niệm`);
   }
 }
 
