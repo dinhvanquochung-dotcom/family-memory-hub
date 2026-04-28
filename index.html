@@ -2787,10 +2787,10 @@ function renderMemories(memories) {
   const empty = document.getElementById('timelineEmpty');
 
   if (!memories.length) {
-    empty.style.display = 'block';
+    if (empty) empty.style.display = 'block';
     return;
   }
-  empty.style.display = 'none';
+  if (empty) empty.style.display = 'none';
 
   // Group by month
   const grouped = {};
@@ -3205,7 +3205,7 @@ function setDateMode(mode) {
   const textBtn  = document.getElementById('dateModeTextBtn');
   const calInput = document.getElementById('memoryDate');
   const txtInput = document.getElementById('memoryDateText');
-  if (!calBtn) return;
+  if (!calBtn || !textBtn || !calInput || !txtInput) return;
   if (mode === 'cal') {
     calBtn.classList.add('active');   textBtn.classList.remove('active');
     calInput.style.display = '';      txtInput.style.display = 'none';
@@ -3222,6 +3222,7 @@ function handleFileSelect(event) {
 
   state.selectedFiles = files;
   const previews = document.getElementById('uploadPreviews');
+  if (!previews) return;
   previews.style.display = 'grid';
   previews.innerHTML = '';
 
@@ -3289,10 +3290,11 @@ async function submitMemory() {
 
   if (state.selectedFiles.length) {
     // Hide preview grid, show progress list
-    document.getElementById('uploadPreviews').style.display = 'none';
+    const prevGrid = document.getElementById('uploadPreviews');
+    if (prevGrid) prevGrid.style.display = 'none';
     const progList = document.getElementById('uploadProgressList');
-    progList.style.display = 'block';
-    progList.innerHTML = state.selectedFiles.map((file, i) => {
+    if (progList) progList.style.display = 'block';
+    if (progList) progList.innerHTML = state.selectedFiles.map((file, i) => {
       const thumb = file.type.startsWith('image/')
         ? `<img class="upload-prog-thumb" src="${URL.createObjectURL(file)}" alt="">`
         : `<div class="upload-prog-thumb" style="display:flex;align-items:center;justify-content:center;">
@@ -3360,10 +3362,10 @@ async function submitMemory() {
     setDefaultDate();
     const dtxt = document.getElementById('memoryDateText');
     if (dtxt) dtxt.value = '';
-    document.getElementById('uploadPreviews').style.display      = 'none';
-    document.getElementById('uploadPreviews').innerHTML          = '';
-    document.getElementById('uploadProgressList').style.display  = 'none';
-    document.getElementById('uploadProgressList').innerHTML      = '';
+    const prevEl = document.getElementById('uploadPreviews');
+    if (prevEl) { prevEl.style.display = 'none'; prevEl.innerHTML = ''; }
+    const progEl = document.getElementById('uploadProgressList');
+    if (progEl) { progEl.style.display = 'none'; progEl.innerHTML = ''; }
 
     hideLoading();
     btn.disabled = false;
