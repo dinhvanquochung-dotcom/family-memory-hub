@@ -2244,6 +2244,7 @@
         <div class="form-field">
           <label class="form-label">Sự kiện</label>
           <div class="event-tags" id="eventTags">
+            <div class="event-tag" onclick="toggleTag(this)" data-value="tuong_nho">🕯️ Tưởng nhớ</div>
             <div class="event-tag" onclick="toggleTag(this)" data-value="gio">🕯️ Giỗ</div>
             <div class="event-tag" onclick="toggleTag(this)" data-value="tet">🎊 Tết</div>
             <div class="event-tag" onclick="toggleTag(this)" data-value="sinhnhat">🎂 Sinh nhật</div>
@@ -2806,7 +2807,7 @@ function buildImagesGrid(images, memId) {
 }
 
 const EVENT_LABELS = {
-  gio: '🕯️ Giỗ', tet: '🎊 Tết', sinhnhat: '🎂 Sinh nhật',
+  tuong_nho: '🕯️ Tưởng nhớ', gio: '🕯️ Giỗ', tet: '🎊 Tết', sinhnhat: '🎂 Sinh nhật',
   cuoi: '💒 Đám cưới', thoi_noi: '👶 Thôi nôi',
   du_lich: '✈️ Du lịch', thuong_ngay: '📸 Ngày thường'
 };
@@ -2886,10 +2887,10 @@ function lfaHeroClick() {
 }
 
 function filterByGio() {
-  const filtered = state.memories.filter(m => m.eventTag === 'gio');
+  const filtered = state.memories.filter(m => m.eventTag === 'tuong_nho' || m.eventTag === 'gio');
   switchTab('timeline');
   renderMemories(filtered);
-  showToast(filtered.length ? `${filtered.length} kỷ niệm về Ông Bà` : 'Chưa có kỷ niệm giỗ');
+  showToast(filtered.length ? `${filtered.length} kỷ niệm về Ông Bà` : 'Chưa có kỷ niệm nào');
 }
 
 function _lfaRenderStats(mems) {
