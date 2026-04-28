@@ -262,11 +262,17 @@
     }
 
     .nav-tagline {
-      font-family: var(--font-body);
-      font-size: 12px; color: var(--gold);
-      font-style: italic; letter-spacing: 0.01em;
+      font-family: var(--font-display);
+      font-size: 18px; color: var(--gold);
+      font-style: italic; letter-spacing: 2px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      display: flex; align-items: center; gap: 10px;
     }
+    .nav-tagline-deco {
+      display: block; height: 1px; min-width: 18px;
+      background: rgba(184,134,46,0.45); flex-shrink: 0;
+    }
+    .nav-tagline-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     .nav-right {
       display: flex; align-items: center; gap: 8px; flex-shrink: 0;
@@ -957,6 +963,7 @@
     .lfa-hero-img {
       width: 100%; height: 100%;
       object-fit: cover;
+      object-position: center top;
       display: block;
       transition: transform 0.4s;
     }
@@ -1093,8 +1100,7 @@
       padding: 0 16px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      grid-auto-rows: 90px;
-      grid-auto-flow: row dense;
+      grid-auto-rows: 108px;
       gap: 4px;
     }
     .lfa-tile {
@@ -1103,7 +1109,6 @@
       background: var(--royal-pale);
       cursor: pointer;
     }
-    .lfa-tile.big { grid-column: span 2; grid-row: span 2; }
     .lfa-tile img {
       width: 100%; height: 100%;
       object-fit: cover; display: block;
@@ -1117,8 +1122,7 @@
       display: flex; flex-direction: column;
       justify-content: flex-end; padding: 8px;
     }
-    .lfa-tile:hover .lfa-tile-ov,
-    .lfa-tile.big .lfa-tile-ov { opacity: 1; }
+    .lfa-tile:hover .lfa-tile-ov { opacity: 1; }
     .lfa-tile-name {
       font-size: 11px; font-weight: 600; color: #fff;
       line-height: 1.3;
@@ -1135,36 +1139,46 @@
     /* 5. Horizontal timeline */
     .lfa-htl {
       overflow-x: auto; padding: 0 16px 24px;
-      display: flex; gap: 10px;
+      display: flex; gap: 12px;
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
     }
     .lfa-htl::-webkit-scrollbar { display: none; }
     .lfa-htl-month {
-      flex-shrink: 0; width: 96px; cursor: pointer;
+      flex-shrink: 0; width: 130px; cursor: pointer;
     }
-    .lfa-htl-thumbs {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      gap: 2px; width: 96px; height: 96px;
-      border-radius: var(--radius-sm); overflow: hidden;
-      margin-bottom: 6px;
-      transition: box-shadow 0.2s;
+    .lfa-htl-card {
+      width: 130px; height: 88px;
+      border-radius: var(--radius-md);
+      overflow: hidden; margin-bottom: 8px;
+      background: var(--royal-pale);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, transform 0.2s;
     }
-    .lfa-htl-month:hover .lfa-htl-thumbs { box-shadow: var(--shadow-md); }
-    .lfa-htl-thumb {
-      background: var(--royal-pale); overflow: hidden;
+    .lfa-htl-month:hover .lfa-htl-card {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
     }
-    .lfa-htl-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .lfa-htl-card img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center top;
+      display: block;
+    }
+    .lfa-htl-card-empty {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--royal-pale), var(--royal-ghost));
+    }
     .lfa-htl-lbl {
-      font-size: 11px; font-weight: 600; color: var(--ink-mid);
+      font-family: var(--font-display);
+      font-size: 13px; font-weight: 600; color: var(--ink);
       text-align: center; transition: color 0.15s;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .lfa-htl-month:hover .lfa-htl-lbl { color: var(--royal); }
     .lfa-htl-cnt {
-      font-size: 10px; color: var(--ink-soft); text-align: center;
+      font-size: 11px; color: var(--ink-soft);
+      text-align: center; margin-top: 2px;
     }
     .lfa-htl-empty {
       font-style: italic; color: var(--ink-soft);
@@ -1836,7 +1850,11 @@
     </div>
     <!-- Center: Subtitle -->
     <div class="nav-center">
-      <div class="nav-tagline">Dòng họ Đinh · Where memories live forever</div>
+      <div class="nav-tagline">
+        <span class="nav-tagline-deco"></span>
+        <span class="nav-tagline-text">Dòng họ Đinh · Where memories live forever</span>
+        <span class="nav-tagline-deco"></span>
+      </div>
     </div>
     <!-- Right: Avatar + name + logout -->
     <div class="nav-right">
@@ -1930,7 +1948,7 @@
           <div class="lfa-stat-label">Ảnh</div>
         </div>
         <div class="lfa-stat">
-          <div class="lfa-stat-num">10</div>
+          <div class="lfa-stat-num" id="lfaStatFamilies">—</div>
           <div class="lfa-stat-label">Gia đình</div>
         </div>
         <div class="lfa-stat">
@@ -2755,22 +2773,30 @@ function lfaHeroClick() {
 function _lfaRenderStats(mems) {
   const memEl    = document.getElementById('lfaStatMem');
   const photosEl = document.getElementById('lfaStatPhotos');
+  const famEl    = document.getElementById('lfaStatFamilies');
   const evEl     = document.getElementById('lfaStatEvent');
-  if (memEl)    memEl.textContent = mems.length;
+
+  if (memEl) memEl.textContent = mems.length;
+
   if (photosEl) {
-    photosEl.textContent = mems.reduce((n, m) => n + (m.imageUrls?.length || (m.imageUrl ? 1 : 0)), 0);
+    const total = mems.reduce((n, m) => n + (m.imageUrls?.length || (m.imageUrl ? 1 : 0)), 0);
+    photosEl.textContent = total;
   }
+
+  if (famEl) {
+    const activeFams = new Set(mems.map(m => m.familyId).filter(Boolean)).size;
+    famEl.textContent = activeFams || '—';
+  }
+
   if (evEl) {
     const ev = mems.find(m => m.eventTag && m.eventTag !== 'thuong_ngay');
     if (ev) {
       const raw = EVENT_LABELS[ev.eventTag] || ev.eventTag;
-      const emoji = raw.match(/^\S+/)?.[0] || raw;
-      evEl.textContent = emoji;
-      evEl.style.fontSize = '20px';
+      evEl.textContent = raw.match(/^\S+/)?.[0] || raw;
     } else {
       evEl.textContent = '—';
-      evEl.style.fontSize = '20px';
     }
+    evEl.style.fontSize = '20px';
   }
 }
 
@@ -2808,24 +2834,24 @@ function _lfaRenderToday(mems) {
 function _lfaRenderMosaic(mems) {
   const grid = document.getElementById('lfaMosaic');
   if (!grid) return;
-  const pool = mems.filter(m => m.imageUrls?.length || m.imageUrl).slice(0, 12);
+  // Skip index 0 (already shown in hero) — start from 2nd memory with images
+  const all  = mems.filter(m => m.imageUrls?.length || m.imageUrl);
+  const pool = all.slice(1, 13);
   if (!pool.length) {
     grid.innerHTML = '<div class="lfa-mosaic-empty">Chưa có kỷ niệm nào</div>';
     return;
   }
-  grid.innerHTML = pool.map((m, i) => {
+  grid.innerHTML = pool.map(m => {
     const img  = (m.imageUrls || [m.imageUrl])[0];
-    const fam  = FAMILIES.find(f => f.id === m.familyId) || { name: 'Dòng họ Đinh' };
     const date = m.memoryDate
-      ? new Date(m.memoryDate).toLocaleDateString('vi-VN', { month:'2-digit', year:'numeric' })
+      ? new Date(m.memoryDate).toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' })
       : '';
-    const big  = i === 0 ? ' big' : '';
-    const fn   = m.id ? `openLightboxById('${m.id}',0)` : '';
-    return `<div class="lfa-tile${big}" onclick="${fn}">
+    const fn = m.id ? `openLightboxById('${m.id}',0)` : '';
+    return `<div class="lfa-tile" onclick="${fn}">
       <img src="${img}" alt="" loading="lazy" onerror="this.closest('.lfa-tile').style.display='none'">
       <div class="lfa-tile-ov">
         <div class="lfa-tile-name">${escapeHtml(m.caption || 'Kỷ niệm')}</div>
-        <div class="lfa-tile-sub">GĐ ${escapeHtml(fam.name)}${date ? ' · ' + date : ''}</div>
+        ${date ? `<div class="lfa-tile-sub">${date}</div>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -2848,15 +2874,21 @@ function _lfaRenderHtl(mems) {
     htl.innerHTML = '<div class="lfa-htl-empty">Chưa có dữ liệu</div>';
     return;
   }
-  htl.innerHTML = months.map(({ key, label, mems: gm }) => {
-    const srcs = gm.flatMap(m => m.imageUrls || (m.imageUrl ? [m.imageUrl] : [])).slice(0, 4);
-    while (srcs.length < 4) srcs.push(null);
-    const thumbs = srcs.map(s => s
-      ? `<div class="lfa-htl-thumb"><img src="${s}" alt="" loading="lazy"></div>`
-      : `<div class="lfa-htl-thumb"></div>`
-    ).join('');
+  htl.innerHTML = months.map(({ key, mems: gm }) => {
+    const [yr, mo] = key.split('-').map(Number);
+    const label = `Tháng ${mo}/${yr}`;
+    const firstImg = gm.flatMap(m => m.imageUrls || (m.imageUrl ? [m.imageUrl] : []))[0];
+    const cardInner = firstImg
+      ? `<img src="${firstImg}" alt="" loading="lazy">`
+      : `<div class="lfa-htl-card-empty">
+           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+             <rect x="2" y="5" width="20" height="14" rx="2" stroke="rgba(26,58,124,0.25)" stroke-width="1.4"/>
+             <circle cx="8" cy="11" r="2.5" stroke="rgba(26,58,124,0.25)" stroke-width="1.4"/>
+             <path d="M2 17l5-4 4 4 3-3 8 5" stroke="rgba(26,58,124,0.25)" stroke-width="1.4" stroke-linecap="round"/>
+           </svg>
+         </div>`;
     return `<div class="lfa-htl-month" onclick="lfaJumpMonth('${key}')">
-      <div class="lfa-htl-thumbs">${thumbs}</div>
+      <div class="lfa-htl-card">${cardInner}</div>
       <div class="lfa-htl-lbl">${label}</div>
       <div class="lfa-htl-cnt">${gm.length} kỷ niệm</div>
     </div>`;
