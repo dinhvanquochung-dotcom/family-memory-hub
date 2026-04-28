@@ -2423,8 +2423,9 @@ const CONFIG = {
   // 4. Danh sách email được phép vào (whitelist)
   // Thêm email của tất cả 20+ thành viên vào đây
   ALLOWED_EMAILS: [
-    'dinhvanquochung@gmail.com',
-    // Thêm email các thành viên khác vào đây
+    'dinhvanquochung@gmail.com',       // admin
+    'minhphuongdinh1967@gmail.com',
+    'levuq.nhi@gmail.com',
     // '__ALLOW_ALL__'  // Bỏ comment dòng này để test với mọi email
   ]
 };
@@ -2527,7 +2528,8 @@ function handleCredentialResponse(response) {
                     CONFIG.ALLOWED_EMAILS.includes(email);
     if (!allowed) {
       hideLoading();
-      showToast('Email này không có quyền truy cập', 'error');
+      if (state.auth) state.auth.signOut();
+      showToast('Tài khoản chưa được cấp quyền, liên hệ admin', 'error');
       return;
     }
 
