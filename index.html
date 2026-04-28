@@ -1012,6 +1012,29 @@
       color: rgba(255,255,255,0.85);
       font-size: 10px; padding: 3px 8px; border-radius: 10px;
     }
+    .lfa-hero-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 16px;
+      pointer-events: none;
+    }
+    .lfa-hero-family-title {
+      font-family: var(--font-display);
+      font-size: 26px; font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.55);
+      margin-bottom: 6px;
+    }
+    .lfa-hero-family-sub {
+      font-family: var(--font-display);
+      font-size: 13px; font-weight: 400;
+      color: var(--gold-bright);
+      letter-spacing: 0.12em;
+      font-style: italic;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+    }
 
     /* 2. Stats bar */
     .lfa-stats {
@@ -1080,6 +1103,71 @@
       margin-bottom: 5px;
     }
     .lfa-today-meta { font-size: 11px; color: var(--ink-soft); }
+
+    /* 3b. Memorial */
+    .lfa-memorial {
+      margin: 12px 16px;
+      background: linear-gradient(135deg, #1a3a7c, #0d2040);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid rgba(184,134,46,0.3);
+    }
+    .lfa-mem-hdr {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; padding: 14px 16px 10px;
+    }
+    .lfa-mem-rule {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(184,134,46,0.6), transparent);
+    }
+    .lfa-mem-title {
+      font-family: var(--font-display);
+      font-size: 15px; font-weight: 600;
+      color: var(--gold-bright); white-space: nowrap;
+    }
+    .lfa-mem-cards {
+      display: flex; gap: 10px;
+      padding: 0 14px 14px;
+    }
+    .lfa-mem-card {
+      flex: 1; background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(184,134,46,0.2);
+      border-radius: var(--radius-sm);
+      padding: 14px 12px; text-align: center;
+    }
+    .lfa-mem-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(184,134,46,0.15);
+      border: 1.5px solid rgba(184,134,46,0.45);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 8px; font-size: 22px;
+    }
+    .lfa-mem-name {
+      font-family: var(--font-display);
+      font-size: 13px; font-weight: 600;
+      color: var(--gold-bright); margin-bottom: 3px;
+    }
+    .lfa-mem-years {
+      font-size: 11px; color: rgba(255,255,255,0.4);
+      margin-bottom: 8px;
+    }
+    .lfa-mem-quote {
+      font-size: 11px; color: rgba(255,255,255,0.5);
+      font-style: italic; line-height: 1.55;
+    }
+    .lfa-mem-btn {
+      display: block; margin: 0 14px 14px;
+      padding: 9px 0;
+      width: calc(100% - 28px);
+      background: transparent;
+      border: 1px solid rgba(184,134,46,0.45);
+      border-radius: var(--radius-sm);
+      color: var(--gold-bright);
+      font-size: 12px; font-weight: 500;
+      letter-spacing: 0.05em; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .lfa-mem-btn:hover { background: rgba(184,134,46,0.15); }
 
     /* 4. Mosaic */
     .lfa-sec-hdr {
@@ -1957,7 +2045,31 @@
         </div>
       </div>
 
-      <!-- 3. On-this-day -->
+      <!-- 3. Memorial -->
+      <div class="lfa-memorial">
+        <div class="lfa-mem-hdr">
+          <div class="lfa-mem-rule"></div>
+          <div class="lfa-mem-title">🕯️ Tưởng Nhớ</div>
+          <div class="lfa-mem-rule"></div>
+        </div>
+        <div class="lfa-mem-cards">
+          <div class="lfa-mem-card">
+            <div class="lfa-mem-avatar">👴</div>
+            <div class="lfa-mem-name">Ông Nội</div>
+            <div class="lfa-mem-years">— · —</div>
+            <div class="lfa-mem-quote">Công ơn sinh thành dưỡng dục — mãi khắc ghi trong tim</div>
+          </div>
+          <div class="lfa-mem-card">
+            <div class="lfa-mem-avatar">👵</div>
+            <div class="lfa-mem-name">Bà Nội</div>
+            <div class="lfa-mem-years">— · —</div>
+            <div class="lfa-mem-quote">Công ơn sinh thành dưỡng dục — mãi khắc ghi trong tim</div>
+          </div>
+        </div>
+        <button class="lfa-mem-btn" onclick="filterByGio()">Xem kỷ niệm về Ông Bà →</button>
+      </div>
+
+      <!-- 4. On-this-day -->
       <div class="lfa-today" id="lfaToday">
         <div class="lfa-today-hdr">
           <span>📅</span>
@@ -2744,30 +2856,26 @@ function _lfaRenderHero(mems) {
   }
   _lfaHeroId = m.id;
   const img1 = (m.imageUrls || [m.imageUrl])[0];
-  const fam  = FAMILIES.find(f => f.id === m.familyId) || { name: 'Dòng họ Đinh' };
-  const date = m.memoryDate
-    ? new Date(m.memoryDate).toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' })
-    : '';
-  const tag  = m.eventTag ? (EVENT_LABELS[m.eventTag] || m.eventTag) : '';
-  const imgCount = (m.imageUrls?.length || (m.imageUrl ? 1 : 0));
 
   hero.innerHTML = `
     <img class="lfa-hero-img" src="${img1}" alt="" loading="eager"
          onerror="this.style.display='none'">
     <div class="lfa-hero-gradient"></div>
-    ${imgCount > 1 ? `<div class="lfa-hero-badge">+${imgCount - 1} ảnh</div>` : ''}
-    <div class="lfa-hero-info">
-      ${tag ? `<div class="lfa-hero-event">${tag}</div>` : ''}
-      ${m.caption ? `<div class="lfa-hero-caption">${escapeHtml(m.caption)}</div>` : ''}
-      <div class="lfa-hero-meta">
-        <span>Gia đình ${escapeHtml(fam.name)}</span>
-        ${date ? `<span class="lfa-hero-dot">·</span><span>${date}</span>` : ''}
-      </div>
+    <div class="lfa-hero-center">
+      <div class="lfa-hero-family-title">Dòng họ Đinh</div>
+      <div class="lfa-hero-family-sub">Lưu giữ ký ức muôn đời</div>
     </div>`;
 }
 
 function lfaHeroClick() {
   if (_lfaHeroId && memoryImageMap[_lfaHeroId]) openLightboxById(_lfaHeroId, 0);
+}
+
+function filterByGio() {
+  const filtered = state.memories.filter(m => m.eventTag === 'gio');
+  switchTab('timeline');
+  renderMemories(filtered);
+  showToast(filtered.length ? `${filtered.length} kỷ niệm về Ông Bà` : 'Chưa có kỷ niệm giỗ');
 }
 
 function _lfaRenderStats(mems) {
