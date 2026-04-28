@@ -1498,6 +1498,39 @@
       color: var(--ink-soft);
       margin-bottom: 12px;
     }
+    .video-platform-badge {
+      display: none;
+      align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 10px;
+      font-size: 11px; font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .video-platform-badge.youtube { background: #fee2e2; color: #b91c1c; }
+    .video-platform-badge.drive   { background: #dbeafe; color: #1d4ed8; }
+    .video-platform-badge.unknown { background: #fef3c7; color: #92400e; }
+    .video-preview-wrap {
+      display: none;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      background: #000;
+      margin-top: 4px;
+    }
+    .video-preview-wrap.show { display: block; }
+    .video-preview-wrap iframe { display: block; border: none; }
+    .memory-video-section {
+      background: #000;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+    }
+    .memory-video-section iframe { display: block; border: none; }
+    .memory-video-badge {
+      display: inline-flex; align-items: center; gap: 3px;
+      background: rgba(0,0,0,0.55); color: #fff;
+      font-size: 10px; font-weight: 500;
+      padding: 2px 7px; border-radius: 10px;
+      margin-left: 5px; vertical-align: middle;
+    }
 
     /* Submit button */
     .btn-primary {
@@ -2309,8 +2342,12 @@
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="#1a3a7c" stroke-width="1.2"/><path d="M6 6l4 2-4 2V6z" fill="#1a3a7c"/></svg>
             Nhúng video YouTube / Google Drive
           </div>
-          <div class="video-embed-sub">Dành cho video dài — paste link vào đây thay vì upload trực tiếp</div>
-          <input type="url" class="form-input" id="videoUrl" placeholder="https://youtube.com/watch?v=... hoặc link Google Drive">
+          <div class="video-embed-sub">Paste link YouTube hoặc Google Drive</div>
+          <div class="video-platform-badge" id="videoPlatformBadge"></div>
+          <input type="url" class="form-input" id="videoUrl"
+                 placeholder="https://youtube.com/watch?v=... hoặc link Google Drive"
+                 oninput="onVideoUrlInput(this.value)">
+          <div class="video-preview-wrap" id="videoPreviewWrap"></div>
         </div>
 
         <!-- Caption -->
@@ -2825,15 +2862,13 @@ function renderMemoryCard(m) {
 
   const images = m.imageUrls || (m.imageUrl ? [m.imageUrl] : []);
   let mediaHtml = '';
-  if (images.length) {
-    mediaHtml = buildImagesGrid(images, m.id);
-  } else if (m.videoUrl) {
-    mediaHtml = `<div class="memory-media" style="background:#000;aspect-ratio:16/9;">${getVideoEmbed(m.videoUrl)}</div>`;
-  }
+  if (images.length) mediaHtml += buildImagesGrid(images, m.id);
+  if (m.videoUrl)    mediaHtml += `<div class="memory-video-section">${getVideoEmbed(m.videoUrl)}</div>`;
 
+  const videoBadge = m.videoUrl ? `<span class="memory-video-badge">▶ Video</span>` : '';
   const eventBadge = event
-    ? `<span class="memory-event-badge" style="background:var(--royal-pale);color:var(--royal);">${event}</span>`
-    : '';
+    ? `<span class="memory-event-badge" style="background:var(--royal-pale);color:var(--royal);">${event}${videoBadge}</span>`
+    : videoBadge;
 
   const commentSection = m.id ? `
     <div class="comment-section" id="comments-${m.id}" style="display:none;">
@@ -2972,17 +3007,54 @@ const EVENT_LABELS = {
   du_lich: '✈️ Du lịch', thuong_ngay: '📸 Ngày thường'
 };
 
-function getVideoEmbed(url) {
-  const ytMatch  = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
-  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+function _detectVideo(url) {
+  const ytMatch    = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^&\s/?]+)/);
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
+  if (ytMatch)    return { type: 'youtube', id: ytMatch[1] };
+  if (driveMatch) return { type: 'drive',   id: driveMatch[1] };
+  return null;
+}
 
-  if (ytMatch) {
-    return `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen style="border:none;"></iframe>`;
+function getVideoEmbed(url) {
+  const v = _detectVideo(url);
+  if (!v) return `<a href="${url}" target="_blank" rel="noopener" style="color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;height:100%;text-decoration:none;">▶ Xem video ↗</a>`;
+  if (v.type === 'youtube') return `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${v.id}" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>`;
+  return `<iframe width="100%" height="100%" src="https://drive.google.com/file/d/${v.id}/preview" frameborder="0" allowfullscreen></iframe>`;
+}
+
+function onVideoUrlInput(raw) {
+  const url     = raw.trim();
+  const badge   = document.getElementById('videoPlatformBadge');
+  const preview = document.getElementById('videoPreviewWrap');
+  if (!badge || !preview) return;
+
+  if (!url) {
+    badge.style.display = 'none';
+    preview.classList.remove('show');
+    preview.innerHTML = '';
+    return;
   }
-  if (driveMatch) {
-    return `<iframe width="100%" height="100%" src="https://drive.google.com/file/d/${driveMatch[1]}/preview" frameborder="0" allowfullscreen style="border:none;"></iframe>`;
+
+  const v = _detectVideo(url);
+  if (v?.type === 'youtube') {
+    badge.className = 'video-platform-badge youtube';
+    badge.textContent = '▶ YouTube';
+    badge.style.display = 'inline-flex';
+    preview.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${v.id}" frameborder="0" allowfullscreen></iframe>`;
+    preview.classList.add('show');
+  } else if (v?.type === 'drive') {
+    badge.className = 'video-platform-badge drive';
+    badge.textContent = '▶ Google Drive';
+    badge.style.display = 'inline-flex';
+    preview.innerHTML = `<iframe width="100%" height="100%" src="https://drive.google.com/file/d/${v.id}/preview" frameborder="0" allowfullscreen></iframe>`;
+    preview.classList.add('show');
+  } else {
+    badge.className = 'video-platform-badge unknown';
+    badge.textContent = '⚠ Link chưa nhận dạng được';
+    badge.style.display = 'inline-flex';
+    preview.classList.remove('show');
+    preview.innerHTML = '';
   }
-  return `<a href="${url}" target="_blank" style="color:white;font-size:13px;display:flex;align-items:center;height:100%;justify-content:center;">Xem video ↗</a>`;
 }
 
 function updateStats() {
@@ -3356,6 +3428,7 @@ async function submitMemory() {
     // Reset form
     document.getElementById('caption').value       = '';
     document.getElementById('videoUrl').value      = '';
+    onVideoUrlInput('');
     document.getElementById('familySelect').value  = '';
     document.querySelectorAll('.event-tag').forEach(t => t.classList.remove('selected'));
     state.selectedFiles = [];
