@@ -1583,6 +1583,61 @@
       transform: translateX(-50%) translateY(0);
     }
 
+    .error-dialog-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 9000;
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .error-dialog-overlay.show { display: flex; }
+    .error-dialog {
+      background: #2a0808;
+      border: 1px solid rgba(255,90,90,0.35);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      width: 100%; max-width: 400px;
+      position: relative;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .error-dialog-title {
+      font-size: 14px; font-weight: 700;
+      color: #ff9090;
+      margin-bottom: 12px; padding-right: 28px;
+    }
+    .error-dialog-close {
+      position: absolute; top: 14px; right: 14px;
+      background: none; border: none;
+      color: rgba(255,255,255,0.4);
+      font-size: 16px; cursor: pointer;
+      line-height: 1; padding: 2px 5px;
+      border-radius: 3px; transition: color 0.15s;
+    }
+    .error-dialog-close:hover { color: #fff; }
+    .error-dialog-body {
+      font-size: 12px; color: rgba(255,255,255,0.75);
+      line-height: 1.6; font-family: monospace;
+      background: rgba(0,0,0,0.35);
+      border-radius: 4px; padding: 10px 12px;
+      margin-bottom: 14px;
+      word-break: break-all;
+      max-height: 220px; overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .error-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
+    .error-dialog-copy {
+      padding: 7px 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: var(--radius-sm);
+      color: rgba(255,255,255,0.75);
+      font-size: 12px; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .error-dialog-copy:hover { background: rgba(255,255,255,0.16); }
+    .error-dialog-copy.copied { color: #7dffb3; border-color: #7dffb3; }
+
     /* ═══════════════════════════════════════
        SETUP NOTICE (before Firebase config)
     ═══════════════════════════════════════ */
@@ -1895,6 +1950,17 @@
      TOAST
 ═══════════════════════════════════════ -->
 <div class="toast" id="toast"></div>
+
+<div class="error-dialog-overlay" id="errorDialogOverlay" onclick="closeErrorDialog()">
+  <div class="error-dialog" onclick="event.stopPropagation()">
+    <button class="error-dialog-close" onclick="closeErrorDialog()">✕</button>
+    <div class="error-dialog-title">⚠️ Có lỗi xảy ra</div>
+    <div class="error-dialog-body" id="errorDialogBody"></div>
+    <div class="error-dialog-actions">
+      <button class="error-dialog-copy" id="errorCopyBtn" onclick="copyErrorText()">📋 Copy lỗi</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════
      SCREEN: LOGIN
@@ -2574,6 +2640,30 @@ function showToast(msg, type) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
+function showErrorDialog(e) {
+  const lines = [];
+  if (e?.message) lines.push('Message: ' + e.message);
+  if (e?.code)    lines.push('Code:    ' + e.code);
+  if (!lines.length) lines.push(String(e));
+  document.getElementById('errorDialogBody').textContent = lines.join('\n');
+  const btn = document.getElementById('errorCopyBtn');
+  if (btn) { btn.textContent = '📋 Copy lỗi'; btn.classList.remove('copied'); }
+  document.getElementById('errorDialogOverlay').classList.add('show');
+}
+
+function closeErrorDialog() {
+  document.getElementById('errorDialogOverlay').classList.remove('show');
+}
+
+function copyErrorText() {
+  const text = document.getElementById('errorDialogBody').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('errorCopyBtn');
+    btn.textContent = '✓ Đã copy';
+    btn.classList.add('copied');
+  }).catch(() => showToast('Không copy được', 'error'));
+}
+
 /* ═══════════════════════════════════════
    FAMILY GRID
 ═══════════════════════════════════════ */
@@ -3242,7 +3332,7 @@ async function submitMemory() {
   } catch(e) {
     hideLoading();
     btn.disabled = false;
-    showToast('Có lỗi xảy ra: ' + e.message, 'error');
+    showErrorDialog(e);
     console.error(e);
   }
 }
