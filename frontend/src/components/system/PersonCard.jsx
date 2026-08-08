@@ -1,4 +1,5 @@
 import { branchById } from "@/data/mockData";
+import { SafeImage } from "./SafeImage";
 
 // People-first card, readable on mobile. Circular portrait keeps faces intact.
 export function PersonCard({ person, className = "" }) {
@@ -8,7 +9,7 @@ export function PersonCard({ person, className = "" }) {
       data-testid={`person-card-${person.id}`}
       className={"flex items-center gap-4 border-b border-parchment py-5 " + className}
     >
-      <img
+      <SafeImage
         src={person.photo}
         alt={`Ảnh chân dung ${person.name}`}
         loading="lazy"

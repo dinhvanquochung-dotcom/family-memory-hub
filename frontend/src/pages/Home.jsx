@@ -8,6 +8,7 @@ import { SectionHeading } from "@/components/system/SectionHeading";
 import { MemoryCard } from "@/components/system/MemoryCard";
 import { EventBadge } from "@/components/system/EventBadge";
 import { MemorySkeleton, ErrorState } from "@/components/system/States";
+import { SafeImage } from "@/components/system/SafeImage";
 import {
   memories,
   memoryById,
@@ -223,7 +224,7 @@ function Hero({ reduce }) {
                 data-testid="hero-upload-cta"
                 className="inline-flex min-h-[52px] items-center gap-2 rounded-full bg-navy px-8 text-base font-semibold text-ivory transition-colors duration-200 hover:bg-navy/90"
               >
-                <Plus size={20} aria-hidden="true" /> Đăng một kỷ niệm
+                <Plus size={20} aria-hidden="true" /> Đăng kỷ niệm
               </Link>
               <Link
                 to="/dong-thoi-gian"
@@ -275,7 +276,7 @@ function OnThisDayCard({ memory }) {
       className="group flex flex-col gap-4"
     >
       <div className="relative overflow-hidden bg-parchment" style={{ aspectRatio: "3 / 4" }}>
-        <img src={memory.image} alt={memory.caption} loading="lazy" className="h-full w-full object-cover transition-transform duration-[300ms] group-hover:scale-[1.03]" />
+        <SafeImage src={memory.image} alt={memory.caption} loading="lazy" className="h-full w-full object-cover transition-transform duration-[300ms] group-hover:scale-[1.03]" />
         <span className="absolute left-4 top-4 rounded-full bg-ivory/90 px-3 py-1 font-display text-lg text-navy">
           {memory.year}
         </span>
@@ -302,7 +303,7 @@ function MemorialSection() {
             <Reveal key={m.id} delay={i * 0.1}>
               <figure className="flex flex-col items-center gap-5 text-center" data-testid={`memorial-${m.id}`}>
                 <div className="h-40 w-40 overflow-hidden rounded-full border border-brass/40">
-                  <img src={m.photo} alt={`Ảnh tưởng nhớ ${m.name}`} loading="lazy" className="h-full w-full object-cover" style={{ objectPosition: "center top" }} />
+                  <SafeImage src={m.photo} alt={`Ảnh tưởng nhớ ${m.name}`} loading="lazy" className="h-full w-full object-cover" style={{ objectPosition: "center top" }} />
                 </div>
                 <figcaption>
                   <p className="font-display text-2xl text-navy">{m.name}</p>

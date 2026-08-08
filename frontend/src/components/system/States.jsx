@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Inbox, WifiOff, TriangleAlert, RotateCw } from "lucide-react";
+import { Inbox, WifiOff, TriangleAlert, RotateCw, Lock } from "lucide-react";
 
 // Skeleton block that mirrors the memory grid rhythm.
 export function MemorySkeleton({ count = 6, testId = "memory-skeleton" }) {
@@ -55,8 +55,9 @@ export function EmptyState({ title, description, actionLabel, actionTo, onAction
   );
 }
 
-// Error state with an explicit retry. Icon + text conveys status (not color alone).
-export function ErrorState({ title = "Không tải được ký ức", description = "Đã có trục trặc khi mở kho ký ức. Xin thử lại trong giây lát.", onRetry, testId = "error-state" }) {
+// Recoverable error — friendly copy, never a technical stack trace. Icon + text
+// convey status (not color alone) and an explicit retry.
+export function ErrorState({ title = "Chưa mở được kho ký ức", description = "Có chút trục trặc khi tải nội dung. Xin thử lại trong giây lát.", onRetry, testId = "error-state" }) {
   return (
     <div
       data-testid={testId}
@@ -81,16 +82,48 @@ export function ErrorState({ title = "Không tải được ký ức", descripti
   );
 }
 
+// Permission denied — dignified, explains what's needed, offers a way back.
+export function PermissionDenied({
+  title = "Bạn chưa có quyền cho mục này",
+  description = "Tài khoản của bạn hiện không có quyền thực hiện thao tác này. Hãy liên hệ quản trị gia đình nếu bạn cần thêm quyền.",
+  actionLabel = "Về trang nhà",
+  actionTo = "/",
+  testId = "permission-denied",
+}) {
+  return (
+    <div
+      data-testid={testId}
+      role="status"
+      className="flex flex-col items-center justify-center gap-5 border border-brass/40 bg-brass/5 px-6 py-20 text-center"
+    >
+      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-brass/15 text-brass">
+        <Lock size={26} strokeWidth={1.5} aria-hidden="true" />
+      </span>
+      <h3 className="font-display text-2xl text-ink">{title}</h3>
+      <p className="max-w-md text-base leading-relaxed text-ink/60">{description}</p>
+      {actionLabel && actionTo && (
+        <Link
+          to={actionTo}
+          data-testid="permission-denied-action"
+          className="mt-2 inline-flex min-h-[44px] items-center rounded-full bg-navy px-7 text-sm font-medium text-ivory transition-colors duration-200 hover:bg-navy/90"
+        >
+          {actionLabel}
+        </Link>
+      )}
+    </div>
+  );
+}
+
 // Offline banner — communicates via icon + text.
 export function OfflineBanner({ testId = "offline-banner" }) {
   return (
     <div
       data-testid={testId}
       role="status"
-      className="flex items-center justify-center gap-3 bg-ink px-4 py-2 text-sm text-ivory"
+      className="flex items-center justify-center gap-3 bg-ink px-4 py-2 text-center text-sm text-ivory"
     >
       <WifiOff size={16} aria-hidden="true" />
-      <span>Bạn đang xem ngoại tuyến — một số ký ức có thể chưa được cập nhật.</span>
+      <span>Bạn đang ngoại tuyến — một số ký ức có thể chưa được cập nhật.</span>
     </div>
   );
 }

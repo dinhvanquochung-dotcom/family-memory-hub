@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { EventBadge } from "./EventBadge";
+import { SafeImage } from "./SafeImage";
 import { branchById, formatViDate } from "@/data/mockData";
 
 // Primary content unit. Photography is the hero; caption + meta sit below.
@@ -17,7 +18,7 @@ export function MemoryCard({ memory, className = "", index = 0 }) {
           className="relative overflow-hidden bg-parchment clip-frame"
           style={{ aspectRatio: memory.ratio || "4 / 3" }}
         >
-          <img
+          <SafeImage
             src={memory.image}
             alt={memory.caption}
             loading={index > 2 ? "lazy" : "eager"}

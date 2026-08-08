@@ -67,6 +67,7 @@ export const events = [
 export const memories = [
   {
     id: "mem-tet-1998",
+    authorId: "p-mai",
     title: "Tết đầu tiên có đủ ba thế hệ",
     caption: "Cả nhà quây quần bên nồi bánh chưng, khói bếp và tiếng cười không dứt.",
     story:
@@ -85,6 +86,7 @@ export const memories = [
   },
   {
     id: "mem-cuoi-2001",
+    authorId: "p-huong",
     title: "Đám cưới ba mẹ bên sông Hương",
     caption: "Một chiều Huế trong veo, tà áo dài trắng và lời hẹn ước.",
     story:
@@ -102,6 +104,7 @@ export const memories = [
   },
   {
     id: "mem-sinhnhat-2012",
+    authorId: "p-nam",
     title: "Sinh nhật tám tuổi của Khoa",
     caption: "Chiếc bánh kem đầu tiên tự tay mẹ làm, hơi méo nhưng ngọt nhất.",
     story:
@@ -117,6 +120,7 @@ export const memories = [
   },
   {
     id: "mem-dulich-2016",
+    authorId: "p-long",
     title: "Chuyến đi Đà Lạt của cả họ",
     caption: "Sáng sớm sương giăng, mọi người co ro bên ly sữa đậu nóng.",
     story:
@@ -134,6 +138,7 @@ export const memories = [
   },
   {
     id: "mem-tet-2020",
+    authorId: "p-nam",
     title: "Tết giữa phố, nhớ Tết quê",
     caption: "Cành đào nhỏ trong căn hộ Sài Gòn, đủ để thấy Tết về.",
     story:
@@ -149,6 +154,7 @@ export const memories = [
   },
   {
     id: "mem-ngaythuong-2023",
+    authorId: "p-huong",
     title: "Bữa cơm chiều thứ Tư",
     caption: "Không dịp gì đặc biệt, chỉ là cả nhà lại đủ mặt.",
     story:
@@ -166,6 +172,7 @@ export const memories = [
   },
   {
     id: "mem-tet-2024",
+    authorId: "p-anh",
     title: "Tết đoàn viên sau nhiều năm",
     caption: "Bốn thế hệ trong một khung hình, hiếm hoi và quý giá.",
     story:

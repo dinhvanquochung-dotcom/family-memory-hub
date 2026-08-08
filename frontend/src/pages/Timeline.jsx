@@ -5,6 +5,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/system/SectionHeading";
 import { EventBadge } from "@/components/system/EventBadge";
 import { MemorySkeleton, EmptyState, ErrorState } from "@/components/system/States";
+import { SafeImage } from "@/components/system/SafeImage";
 import { memories, events, decades, formatViDate, branchById } from "@/data/mockData";
 
 export default function Timeline() {
@@ -45,6 +46,7 @@ export default function Timeline() {
     <div className="mx-auto max-w-editorial px-6 py-14 md:px-8 md:py-20">
       <Reveal>
         <SectionHeading
+          as="h1"
           eyebrow="Dòng thời gian"
           title="Lần theo"
           italicTitle="từng năm tháng"
@@ -122,7 +124,7 @@ function TimelineEntry({ memory }) {
       className="group grid grid-cols-[7rem_1fr] gap-5 sm:grid-cols-[9rem_1fr]"
     >
       <div className="overflow-hidden bg-parchment" style={{ aspectRatio: "1 / 1" }}>
-        <img src={memory.image} alt={memory.caption} loading="lazy" className="h-full w-full object-cover transition-transform duration-[300ms] group-hover:scale-[1.04]" />
+        <SafeImage src={memory.image} alt={memory.caption} loading="lazy" className="h-full w-full object-cover transition-transform duration-[300ms] group-hover:scale-[1.04]" />
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">
