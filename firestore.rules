@@ -1,27 +1,78 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null
+        && request.auth.token.email is string
+        && request.auth.token.email_verified == true;
+    }
+
+    // P0 containment. Move this membership decision to UID-keyed documents or
+    // custom claims in P1; never rely on the browser whitelist for access.
+    function isFamilyMember() {
+      return signedIn() && request.auth.token.email in [
+        'dinhvanquochung@gmail.com',
+        'minhphuongdinh1967@gmail.com',
+        'levuq.nhi@gmail.com'
+      ];
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email == 'dinhvanquochung@gmail.com';
+    }
+
+    function ownsMemory(data) {
+      return data.uploadedBy.email == request.auth.token.email;
+    }
+
+    function validMemoryCreate() {
+      return request.resource.data.uploadedBy is map
+        && request.resource.data.uploadedBy.email == request.auth.token.email
+        && request.resource.data.uploadedBy.name is string
+        && request.resource.data.uploadedBy.name.size() <= 120
+        && request.resource.data.caption is string
+        && request.resource.data.caption.size() <= 5000
+        && request.resource.data.familyId is string
+        && request.resource.data.familyId.size() <= 80;
+    }
 
     match /memories/{memoryId} {
-      allow read: if true;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null
-        && request.auth.token.email == resource.data.uploadedBy.email;
+      allow read: if isFamilyMember();
+      allow create: if isFamilyMember() && validMemoryCreate();
+      // The current UI edits captions only. Identity, ownership, media and
+      // timestamps cannot be reassigned through a normal update.
+      allow update: if isFamilyMember()
+        && ownsMemory(resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['caption'])
+        && request.resource.data.caption is string
+        && request.resource.data.caption.size() <= 5000;
+      allow delete: if isFamilyMember() && ownsMemory(resource.data);
     }
 
     match /comments/{memoryId}/items/{commentId} {
-      allow read: if true;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null
-        && request.auth.token.email == resource.data.author.email;
+      allow read: if isFamilyMember();
+      allow create: if isFamilyMember()
+        && exists(/databases/$(database)/documents/memories/$(memoryId))
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 2000
+        && request.resource.data.author is map
+        && request.resource.data.author.email == request.auth.token.email
+        && request.resource.data.author.name is string
+        && request.resource.data.author.name.size() <= 120;
+      allow update: if false;
+      allow delete: if isFamilyMember()
+        && resource.data.author.email == request.auth.token.email;
     }
 
     match /whitelist/{docId} {
-      // Any authenticated user can check — needed for login whitelist check
-      allow read: if request.auth != null;
-      // Only admin can write
-      allow write: if request.auth != null
-        && request.auth.token.email == 'dinhvanquochung@gmail.com';
+      allow read: if isFamilyMember();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
