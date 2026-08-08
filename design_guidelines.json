@@ -1,0 +1,110 @@
+{
+  "theme": "light",
+  "archetype": "Premium editorial photo journal, Digital family archive, Subtle Vietnamese heritage",
+  "typography": {
+    "headings": {
+      "family": "Newsreader",
+      "import": "@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap');",
+      "usage_rules": "Use for all editorial headings. Emphasize italics for subtitles. Track tightly (-0.02em) for large sizes."
+    },
+    "body": {
+      "family": "Be Vietnam Pro",
+      "import": "@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');",
+      "usage_rules": "Use for UI elements, labels, and paragraph text. Render Vietnamese diacritics excellently. Generous line height (1.6+). Avoid tiny captions (<14px) for accessibility."
+    }
+  },
+  "colors": {
+    "background_primary": "#F7F2E8",
+    "background_secondary": "#E9E1D3",
+    "text_primary": "#20201D",
+    "primary": "#183153",
+    "accent_red": "#9B3A32",
+    "accent_brass": "#B89656",
+    "success": "#456B58",
+    "usage_rules": "Do not use blue-purple gradients, glassmorphism, or sepia filters. Muted brass for Memorial section. Never communicate status through color alone."
+  },
+  "visual_enhancers": {
+    "shadows": "Restrained, subtle shadows. Avoid large diffused drop shadows. Think 'paper lying on paper'. Use 1px borders of #E9E1D3 for definition.",
+    "borders": "Thin dividers (1px solid #E9E1D3 or #B89656/30). Avoid excessive rounded cards (use 0px, 2px, or max 4px border radius).",
+    "textures": "Subtle paper-like surfaces. Use solid background colors, no gradients.",
+    "photography": "Photography is hero. Preserve aspect ratios. DO NOT crop faces (use object-fit: contain or smart crop). No chaotic masonry, use controlled editorial grids. Spotlight/clipped frames allowed."
+  },
+  "layouts": {
+    "grid": "Editorial grid. Use negative space. Content must feel curated, not dumped.",
+    "navigation_desktop": "Minimal top nav. Visually distinct 'Đăng kỷ niệm' CTA. Secondary user menu.",
+    "navigation_mobile": "Mobile-first. Bottom navigation with max 5 destinations (Trang nhà, Dòng thời gian, Gia đình, Album, Tưởng nhớ). Min 44px touch targets. No hover-dependent interactions.",
+    "spacing": "Generous whitespace. Double standard padding (e.g. p-8, p-12)."
+  },
+  "motion": {
+    "general": "Restrained 180-300ms. Gentle fade/reveal. Motion must never block reading.",
+    "parallax": "Subtle/tasteful only. No strong parallax.",
+    "carousels": "NO autoplay carousels.",
+    "accessibility": "Must support prefers-reduced-motion.",
+    "hero_moment": "Masked line-by-line text reveal on load. Slow editorial marquee."
+  },
+  "components": {
+    "buttons": "Large clear controls. Solid background (#183153) with white text, or outline with thin border. Pill or slight rounding.",
+    "cards": "Subtle paper-like. No excessive rounding. No heavy shadows.",
+    "forms": "Large inputs. Clear labels in Be Vietnam Pro. Clear error/success states."
+  },
+  "key_sections": {
+    "hero": "Editorial hero featuring one family memory ('Hôm nay trong ký ức'). Signature on-load hero moment.",
+    "timeline": "'Dòng thời gian' across years and decades. Lightweight filters.",
+    "memorial": "Restrained memorial section ('Tưởng nhớ'). Quiet, dignified, warm. Use muted brass. Avoid dark funeral imagery.",
+    "upload_flow": "Mobile-first upload flow: select -> preview -> caption -> date -> event -> branch -> review. With states (progress/success/error)."
+  },
+  "image_urls": {
+    "hero_memory": {
+      "url": "https://images.unsplash.com/photo-1767604455862-ef31888f68fa?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODl8MHwxfHNlYXJjaHw0fHx2aWV0bmFtZXNlJTIwZmFtaWx5JTIwcG9ydHJhaXR8ZW58MHx8fHwxNzg2MTg0MDMxfDA&ixlib=rb-4.1.0&q=85",
+      "description": "Four people in traditional vietnamese clothing sitting together",
+      "category": "hero"
+    },
+    "timeline_vintage": {
+      "url": "https://images.unsplash.com/photo-1528569937393-ee892b976859?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTB8MHwxfHNlYXJjaHwzfHx2aW50YWdlJTIwZmFtaWx5JTIwcGhvdG8lMjBhbGJ1bXxlbnwwfHx8fDE3ODYxODQwMzB8MA&ixlib=rb-4.1.0&q=85",
+      "description": "person opening photo album displaying grayscale photos",
+      "category": "timeline"
+    },
+    "grandparents": {
+      "url": "https://images.unsplash.com/photo-1586498024141-1940debde48d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTB8MHwxfHNlYXJjaHwxfHxncmFuZHBhcmVudHMlMjBwb3J0cmFpdHxlbnwwfHx8fDE3ODYxODQwMzB8MA&ixlib=rb-4.1.0&q=85",
+      "description": "man in blue polo shirt carrying girl",
+      "category": "editorial_grid"
+    },
+    "family_gathering": {
+      "url": "https://images.unsplash.com/photo-1670899460364-ebc917bac09a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODl8MHwxfHNlYXJjaHwzfHxmYW1pbHklMjBnYXRoZXJpbmclMjBkaW5uZXJ8ZW58MHx8fHwxNzg2MTg0MDMxfDA&ixlib=rb-4.1.0&q=85",
+      "description": "a group of people sitting at a long table",
+      "category": "editorial_grid"
+    }
+  },
+  "libraries": {
+    "motion": ["framer-motion", "lenis"],
+    "icons": "lucide-react"
+  },
+  "accessibility": {
+    "contrast": "WCAG AA contrast required.",
+    "focus": "Visible keyboard focus states on all interactive elements.",
+    "structure": "Semantic headings. Meaningful alt-text for all images.",
+    "testing": "All interactive elements MUST include data-testid attribute."
+  },
+  "instructions_to_main_agent": [
+    "Design a premium editorial photo journal suitable for a Vietnamese extended family.",
+    "Use EXACT color codes provided: Warm ivory #F7F2E8, Soft ink #20201D, Heritage navy #183153, Lacquer red #9B3A32, Muted brass #B89656, Parchment #E9E1D3, Moss green #456B58.",
+    "Implement Newsreader for headings and Be Vietnam Pro for body.",
+    "Create a clean, paper-like UI. DO NOT use glassmorphism, heavy drop shadows, sepia filters, or blue-purple gradients.",
+    "Ensure the hero section features a masked line-by-line reveal animation.",
+    "Include a slow editorial marquee and numbered chapters if applicable.",
+    "Mobile bottom navigation is mandatory with exactly 5 items.",
+    "Ensure all text is large and readable (older audience). Minimum touch target is 44px.",
+    "Implement Lenis for smooth scrolling and framer-motion for restrained entrance animations.",
+    "Do not crop faces in photography; use appropriate aspect ratios."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "You tend to converge toward generic outputs. Make creative, distinctive frontends that surprise and delight.",
+    "Do not use dark colors as gradients.",
+    "Don't make generic centered layouts. Use grid-based editorial structures.",
+    "Never apply universal transition (transition: all). Add transitions for specific properties.",
+    "DO NOT center align the app container (.App { text-align: center; }).",
+    "Use 2-3x more spacing than feels comfortable.",
+    "NEVER use placeholder text or dummy image URLs.",
+    "All interactive elements MUST include data-testid attribute."
+  ]
+}
