@@ -1,54 +1,46 @@
-import { useEffect } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-import { HOME } from "@/constants/testIds";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
-
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          data-testid={HOME.emergentLink}
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+import SmoothScroll from "@/components/motion/SmoothScroll";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { Toaster } from "@/components/ui/sonner";
+import Home from "@/pages/Home";
+import Timeline from "@/pages/Timeline";
+import MemoryDetail from "@/pages/MemoryDetail";
+import Upload from "@/pages/Upload";
+import ComingSoon from "@/pages/ComingSoon";
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
+        <SmoothScroll>
+          <AppLayout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/dong-thoi-gian" element={<Timeline />} />
+              <Route path="/ky-niem/:id" element={<MemoryDetail />} />
+              <Route path="/dang-ky-niem" element={<Upload />} />
+              <Route
+                path="/gia-dinh"
+                element={<ComingSoon title="Gia đình" eyebrow="Đang hoàn thiện" description="Nơi bạn duyệt các nhánh gia đình và từng thành viên. Trải nghiệm này sẽ sớm có mặt." />}
+              />
+              <Route
+                path="/album"
+                element={<ComingSoon title="Album" eyebrow="Đang hoàn thiện" description="Các bộ sưu tập theo sự kiện và chủ đề — Tết, Sinh nhật, Đám cưới, Du lịch. Sắp ra mắt." />}
+              />
+              <Route
+                path="/tim-kiem"
+                element={<ComingSoon title="Tìm trong ký ức" eyebrow="Đang hoàn thiện" description="Tìm theo người, năm, chú thích và sự kiện. Trải nghiệm tìm kiếm sẽ sớm có mặt." />}
+              />
+              <Route
+                path="/tuong-nho"
+                element={<ComingSoon title="Tưởng nhớ" eyebrow="Đang hoàn thiện" description="Một không gian lặng lẽ và ấm áp để tưởng nhớ những người thân yêu. Sắp ra mắt." />}
+              />
+            </Routes>
+          </AppLayout>
+        </SmoothScroll>
       </BrowserRouter>
+      <Toaster position="top-center" />
     </div>
   );
 }
