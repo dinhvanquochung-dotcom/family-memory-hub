@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 44 43% 94%;
+        --foreground: 60 5% 12%;
+        --card: 43 46% 96%;
+        --card-foreground: 60 5% 12%;
+        --popover: 43 46% 96%;
+        --popover-foreground: 60 5% 12%;
+        --primary: 210 55% 21%;
+        --primary-foreground: 44 43% 96%;
+        --secondary: 41 32% 87%;
+        --secondary-foreground: 60 5% 12%;
+        --muted: 41 32% 87%;
+        --muted-foreground: 40 8% 40%;
+        --accent: 41 32% 87%;
+        --accent-foreground: 60 5% 12%;
+        --destructive: 4 51% 40%;
+        --destructive-foreground: 44 43% 96%;
+        --border: 42 27% 82%;
+        --input: 42 27% 78%;
+        --ring: 210 55% 21%;
+        --radius: 0.25rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    html {
+        scroll-behavior: smooth;
+    }
+    body {
+        margin: 0;
+        @apply bg-background text-foreground;
+        font-family: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+        font-size: 17px;
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+    h1, h2, h3, h4, .font-display {
+        font-family: "Newsreader", ui-serif, Georgia, serif;
+        font-weight: 400;
+    }
+    ::selection {
+        background: #9B3A32;
+        color: #F7F2E8;
+    }
+    /* Visible keyboard focus */
+    :focus-visible {
+        outline: 2px solid #183153;
+        outline-offset: 3px;
+        border-radius: 2px;
+    }
+    a, button {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+@layer components {
+    .paper-surface {
+        background-color: #FBF8F1;
+        border: 1px solid #E3DAC9;
+    }
+    .hair-divider {
+        height: 1px;
+        background-color: #E3DAC9;
+    }
+    .eyebrow {
+        font-family: "Be Vietnam Pro", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+        font-size: 0.72rem;
+        font-weight: 500;
+    }
+    /* Subtle paper grain overlay */
+    .grain::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.05;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+}
+
+@layer utilities {
+    .marquee-track {
+        animation: marquee 42s linear infinite;
+    }
+    .marquee-track:hover {
+        animation-play-state: paused;
+    }
+    @keyframes marquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+    }
+    .clip-frame {
+        clip-path: polygon(0 0, 100% 0, 100% 96%, 96% 100%, 0 100%);
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .marquee-track { animation: none !important; }
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
